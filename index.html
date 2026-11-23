@@ -2214,16 +2214,20 @@
       if (charBtn) charBtn.style.display = state.user ? "inline-flex" : "none";
       if (state.user) {
         const accountRole = state.user.role === 'admin' ? 'Dirección' : 'Estudiante';
-        btn.innerHTML = '<span aria-hidden="true" style="font-size:1.2rem;line-height:1;">🪄</span>';
-        btn.title = `Cuenta de ${accountRole}`;
-        btn.setAttribute('aria-label', `Abrir cuenta de ${accountRole}`);
-        btn.style.minWidth = '44px';
-        btn.style.padding = '0.55rem 0.8rem';
-        if (state.user.name) {
-          if (!document.getElementById("rollCharacter").value) document.getElementById("rollCharacter").value = state.user.name;
-          if (!document.getElementById("chatAuthor").value) document.getElementById("chatAuthor").value = state.user.name;
+        if (btn) {
+          btn.innerHTML = '<span aria-hidden="true" style="font-size:1.2rem;line-height:1;">🪄</span>';
+          btn.title = `Cuenta de ${accountRole}`;
+          btn.setAttribute('aria-label', `Abrir cuenta de ${accountRole}`);
+          btn.style.minWidth = '44px';
+          btn.style.padding = '0.55rem 0.8rem';
         }
-      } else {
+        if (state.user.name) {
+          const rollCharacter = document.getElementById("rollCharacter");
+          const chatAuthor = document.getElementById("chatAuthor");
+          if (rollCharacter && !rollCharacter.value) rollCharacter.value = state.user.name;
+          if (chatAuthor && !chatAuthor.value) chatAuthor.value = state.user.name;
+        }
+      } else if (btn) {
         btn.textContent = "Iniciar sesión";
         btn.title = "Iniciar sesión";
         btn.setAttribute('aria-label', 'Iniciar sesión');
