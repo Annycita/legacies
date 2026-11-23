@@ -930,11 +930,23 @@
       count.textContent=`${characters.length} ${characters.length===1?"personaje":"personajes"}`;
       if(!state.user){grid.innerHTML='<p class="messages-empty-strip">Inicia sesión para consultar los personajes publicados.</p>';return;}
       if(!characters.length){grid.innerHTML='<p class="messages-empty-strip">Todavía no hay personajes de jugadoras publicados.</p>';return;}
+      const seals={Amaranthe:"白",Veritastra:"✧",Oathwyn:"♢",Aurelion:"♜",Dirección:"✦"};
       grid.innerHTML=characters.map(profile=>{
         const photo=safePhotoSrc(profile.photo);
         const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(profile.name||"")}" loading="lazy">`:escapeHtml((profile.name||"?").charAt(0).toUpperCase());
-        const creator=profile.ownerName||profile.playerName||profile.displayName||"";
-        return `<button type="button" class="player-directory-card" style="--player-card-color:${safePlayerCardColor(profile.cardColor)}" onclick="openPublicCharacterProfile('${escapeHtml(profile.id)}')"><span class="player-directory-avatar">${avatar}</span><span class="player-directory-info"><h3>${escapeHtml(profile.name||"Personaje sin nombre")}</h3><p>${escapeHtml(profile.dormitory||profile.house||"Sin dormitorio")}</p>${creator?`<p>Creado por ${escapeHtml(creator)}</p>`:""}<p>Ver ficha →</p></span></button>`;
+        const house=profile.dormitory||profile.house||"Dirección";
+        const role=profile.role||"Estudiante";
+        const type="Estudiante";
+        const seal=seals[house]||"✦";
+        return `<article class="npc-dorm-card clickable-card" data-house="${escapeHtml(house)}" onclick="openPublicCharacterProfile('${escapeHtml(profile.id)}')" aria-label="Abrir perfil de ${escapeHtml(profile.name)}">
+          <div class="npc-dorm-portrait" onclick="event.stopPropagation(); const img=this.querySelector('img'); if(img) openImageLightbox(img.src,img.alt)">${avatar}</div>
+          <div class="npc-dorm-copy">
+            <div class="npc-dorm-kicker">${escapeHtml(house)} · ${type}</div>
+            <h3>${escapeHtml(profile.name)}</h3>
+            <div class="npc-dorm-field"><strong>Clase / Cargo</strong><br>${escapeHtml(role)}</div>
+            <div class="npc-dorm-footer"><span>Ver perfil y chat privado</span><span class="npc-dorm-seal">${seal}　→</span></div>
+          </div>
+        </article>`;
       }).join("");
     }
 
