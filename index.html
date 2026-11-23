@@ -1422,6 +1422,21 @@
         showToast("Perfil publicado y actualizado.");
       } catch(e) { console.error(e); showToast("No se pudo guardar el perfil. Comprueba tu conexión y las reglas de Firestore."); }
     }
+    async function publishExistingCharacter(id) {
+      if (!state.user) { showToast("Inicia sesión para publicar tu personaje."); return; }
+      const c = legaciesCharacters.find(x => x.id === id);
+      if (!c) { showToast("No encontramos ese personaje en tu cuenta."); return; }
+      const existing = (state.playerProfiles || []).find(p => p.ownerUid === state.user.uid && p.characterId === id);
+      if (existing) { showToast("Este personaje ya tiene un perfil publicado."); return; }
+      document.getElementById("newCharacterName").value = c.name || "";
+      document.getElementById("newCharacterDorm").value = c.dormitory || "";
+      document.getElementById("newCharacterRole").value = c.role || "";
+      document.getElementById("newCharacterPhoto").value = c.photo || "";
+      document.getElementById("newCharacterDescription").value = c.description || "";
+      document.getElementById("newCharacterSheet").value = c.sheet || "";
+      await savePlayerProfileFromForm(id);
+    }
+
     async function openPlayerProfileEditor(id) {
       const c = legaciesCharacters.find(x=>x.id===id); if (!c) return;
       document.getElementById("newCharacterName").value=c.name||"";
@@ -1984,7 +1999,7 @@
       const list = document.getElementById("charactersList");
       const form = document.getElementById("newCharacterForm");
       if (!legaciesCharacters.length) list.innerHTML = '<p style="color:var(--ink-muted);">Todavía no tienes personajes. ¡Crea el primero!</p>';
-      else list.innerHTML = legaciesCharacters.map(c => `<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:0.7rem;flex-wrap:wrap;padding:0.9rem;"><div><strong>${escapeHtml(c.name || 'Sin nombre')}</strong><div style="font-size:0.82rem;color:var(--ink-muted);">${escapeHtml(c.dormitory || 'Sin dormitorio asignado')}${c.id===activeCharacterId?' · En uso':''}</div></div><div style="display:flex;gap:.45rem;flex-wrap:wrap;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="selectLegaciesCharacter('${c.id}')">${c.id===activeCharacterId?'Seleccionado':'Usar personaje'}</button><button class="btn-danger" onclick="deleteLegaciesCharacter('${c.id}')">Eliminar</button></div></div>`).join('');
+      else list.innerHTML = legaciesCharacters.map(c => `<div class="card" style="display:flex;align-items:center;justify-content:space-between;gap:0.7rem;flex-wrap:wrap;padding:0.9rem;"><div><strong>${escapeHtml(c.name || 'Sin nombre')}</strong><div style="font-size:0.82rem;color:var(--ink-muted);">${escapeHtml(c.dormitory || 'Sin dormitorio asignado')}${c.id===activeCharacterId?' · En uso':''}</div></div><div style="display:flex;gap:.45rem;flex-wrap:wrap;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="selectLegaciesCharacter('${c.id}')">${c.id===activeCharacterId?'Seleccionado':'Usar personaje'}</button><button class="btn-primary-arcane" onclick="publishExistingCharacter('${c.id}')">Publicar perfil</button><button class="btn-danger" onclick="deleteLegaciesCharacter('${c.id}')">Eliminar</button></div></div>`).join('');
       form.style.display = legaciesCharacters.length >= 2 ? "none" : "block";
       if (legaciesCharacters.length >= 2) list.insertAdjacentHTML("beforeend", '<p style="font-size:0.85rem;color:var(--ink-muted);">Has alcanzado el máximo de 2 personajes por cuenta.</p>');
     }
