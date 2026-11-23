@@ -1656,12 +1656,17 @@
         if (isAdminUser) {
           const threads = [...new Set(state.privateMsgs.filter(m => m.npcId === npc.id).map(m => m.playerName))];
           if (!state.activePmPlayerTarget && threads.length) state.activePmPlayerTarget = threads[0];
-          const threadMsgs = state.privateMsgs.filter(m => m.npcId === npc.id && m.playerName.toLowerCase() === state.activePmPlayerTarget.toLowerCase());
+          const eligibleProfiles = (state.playerProfiles || []).filter(p => p && p.ownerUid && p.ownerUid !== LEGACIES_ADMIN_UID && p.name);
+          const selectedProfile = eligibleProfiles.find(p => p.publicId === state.activePmPlayerTarget || p.name === state.activePmPlayerTarget);
+          const threadMsgs = state.privateMsgs.filter(m => m.npcId === npc.id && m.playerName.toLowerCase() === String(state.activePmPlayerTarget || "").toLowerCase());
           area.innerHTML = `
             <div style="display:flex; gap:0.5rem; flex-wrap:wrap; align-items:center; margin-bottom:0.8rem;">
-              <strong class="font-meta" style="font-size:0.78rem;">Responder a jugador:</strong>
-              ${threads.map(t => `<button class="filter-chip ${t.toLowerCase()===state.activePmPlayerTarget.toLowerCase()?'active':''}" onclick="selectPmPlayer('${escapeHtml(t)}')">${escapeHtml(t)}</button>`).join("")}
-              <input id="pmAdminTargetInput" class="form-control" style="max-width:200px; padding:0.35rem 0.6rem;" type="text" placeholder="O escribe jugador..." value="${escapeHtml(state.activePmPlayerTarget)}" onchange="selectPmPlayer(this.value)" />
+              <strong class="font-meta" style="font-size:0.78rem;">Iniciar o abrir conversación con:</strong>
+              <select id="pmAdminTargetSelect" class="form-control" style="max-width:320px;" onchange="selectPmPlayerProfile(this.value)">
+                <option value="">Selecciona un personaje de jugadora…</option>
+                ${eligibleProfiles.map(p => `<option value="${escapeHtml(p.publicId || p.id)}" ${(selectedProfile && (selectedProfile.publicId || selectedProfile.id) === (p.publicId || p.id)) ? "selected" : ""}>${escapeHtml(p.name)} · ${escapeHtml(p.ownerName || p.playerName || p.displayName || "Jugadora")}</option>`).join("")}
+              </select>
+              ${threads.map(t => `<button class="filter-chip ${t.toLowerCase()===String(state.activePmPlayerTarget).toLowerCase()?'active':''}" onclick="selectPmPlayer('${escapeHtml(t)}')">${escapeHtml(t)}</button>`).join("")}
             </div>
             <div class="chat-messages" style="height:240px; border:1px solid rgba(198,154,60,0.4); border-radius:8px; margin-bottom:0.8rem;">
               ${threadMsgs.length ? threadMsgs.map(m => `<div class="chat-msg ${m.senderType==='character'?'from-char':''}"><div class="chat-msg-head"><strong>${escapeHtml(m.senderType==='character'?npc.name:m.playerName)}</strong><span class="meta-date">${escapeHtml(m.timestamp)}</span></div><p>${escapeHtml(m.message)}</p></div>`).join("") : `<p style="color:var(--ink-muted); text-align:center; margin-top:2rem;">Escribe arriba el nombre del jugador para iniciar o ver su conversación con ${escapeHtml(npc.name)}.</p>`}
@@ -1836,6 +1841,11 @@
 
     function savePmPlayerName(name) { localStorage.setItem("legacies_pm_player", name.trim()); fetchPrivateMessagesForCurrentContext().then(renderProfileModal); }
     function selectPmPlayer(name) { state.activePmPlayerTarget = String(name || "").trim(); renderProfileModal(); }
+    function selectPmPlayerProfile(publicId) {
+      const profile = (state.playerProfiles || []).find(p => (p.publicId || p.id) === publicId);
+      state.activePmPlayerTarget = profile ? profile.name : "";
+      renderProfileModal();
+    }
     async function fetchPrivateMessagesForCurrentContext() {
       if (!getScriptUrl() || !state.user) return;
       try {
@@ -1851,8 +1861,11 @@
       let playerName="", ownerUid="";
       if (senderType === "character") {
         if (!isAdmin || !(await ensureAdminPassword())) return;
-        const targetInput=document.getElementById("pmAdminTargetInput"); playerName=(targetInput?targetInput.value:state.activePmPlayerTarget).trim();
-        const matched=(state.playerProfiles||[]).find(p=>String(p.ownerName||p.playerName||p.displayName||"").toLowerCase()===playerName.toLowerCase()); ownerUid=matched&&matched.ownerUid;
+        const targetSelect=document.getElementById("pmAdminTargetSelect");
+        const selectedId=targetSelect ? targetSelect.value : "";
+        const matched=(state.playerProfiles||[]).find(p=>(p.publicId||p.id)===selectedId || p.name===state.activePmPlayerTarget);
+        if(!matched){showToast("Selecciona un personaje de jugadora antes de enviar.");return;}
+        playerName=String(matched.name || "").trim(); ownerUid=matched.ownerUid;
         state.activePmPlayerTarget=playerName;
       } else { playerName=(state.user&&state.user.name)||"Estudiante"; ownerUid=state.user&&state.user.uid; }
       if(!playerName||!ownerUid||!msg){showToast("Falta la cuenta destinataria o el mensaje.");return;}
