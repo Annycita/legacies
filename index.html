@@ -1,4 +1,5 @@
 <!DOCTYPE html>
+<!-- LEGACIES v25: diagnóstico de clearRolls; basado en v24 sin cambios funcionales adicionales. -->
 <html lang="es">
 <head>
   <meta charset="UTF-8" />
@@ -90,6 +91,16 @@
     .post-title { font-size: 1.28rem; color: var(--ink-dark); margin-bottom: 0.45rem; }
     .post-author { font-family: 'Montserrat', sans-serif; font-size: 0.78rem; color: var(--gold-dark); font-weight: 600; margin-top: 0.85rem; padding-top: 0.65rem; border-top: 1px solid rgba(198,154,60,0.25); }
 
+    .board-reactions { display:flex; flex-wrap:wrap; align-items:center; gap:.4rem; margin-top:.85rem; padding-top:.7rem; border-top:1px solid rgba(198,154,60,.22); }
+    .board-reaction { display:inline-flex; align-items:center; gap:.28rem; border:1px solid rgba(198,154,60,.38); background:rgba(255,253,248,.85); border-radius:999px; padding:.28rem .55rem; cursor:pointer; font-size:.9rem; color:var(--ink-dark); transition:background .15s,border-color .15s,transform .15s; }
+    .board-reaction:hover { transform:translateY(-1px); border-color:var(--gold); }
+    .board-reaction.selected { background:rgba(198,154,60,.2); border-color:var(--gold-dark); box-shadow:inset 0 0 0 1px rgba(198,154,60,.18); }
+    .board-reaction-count { font-family:'Montserrat',sans-serif; font-size:.7rem; font-weight:700; }
+    .board-reaction-picker { display:flex; gap:.22rem; margin-left:auto; }
+    .board-reaction-picker button { border:0; background:transparent; cursor:pointer; padding:.2rem; font-size:1.12rem; border-radius:6px; }
+    .board-reaction-picker button:hover { background:rgba(198,154,60,.16); }
+    .board-reaction-hint { width:100%; font-size:.72rem; color:var(--ink-muted); margin-top:.1rem; }
+
     .oracle-layout { display: grid; grid-template-columns: 1fr 1.1fr; gap: 1.8rem; align-items: start; }
     .form-group { margin-bottom: 0.95rem; }
     .form-group label { display: block; font-family: 'Cinzel', serif; font-size: 0.86rem; font-weight: 600; color: var(--ink-dark); margin-bottom: 0.3rem; }
@@ -113,6 +124,13 @@
     .server-pill.demo { background: rgba(143,106,29,0.14); color: var(--gold-dark); border: 1px solid rgba(198,154,60,0.5); }
 
     .history-table-wrap { margin-top: 2rem; overflow-x: auto; background: var(--bg-warm); border: 1px solid rgba(198,154,60,0.65); border-radius: var(--radius); box-shadow: var(--shadow-soft); }
+    .dice-preserve-toggle { display:inline-flex; align-items:center; gap:.5rem; cursor:pointer; color:var(--ink-dark); font-family:'Montserrat',sans-serif; font-size:.74rem; font-weight:600; user-select:none; }
+    .dice-preserve-toggle input { position:absolute; opacity:0; width:1px; height:1px; }
+    .dice-toggle-track { width:36px; height:20px; border-radius:999px; background:#b9adbd; padding:2px; transition:background .2s; }
+    .dice-toggle-track span { display:block; width:16px; height:16px; border-radius:50%; background:#fff; transition:transform .2s; box-shadow:0 1px 3px #0003; }
+    .dice-preserve-toggle input:checked + .dice-toggle-track { background:#5b3b70; }
+    .dice-preserve-toggle input:checked + .dice-toggle-track span { transform:translateX(16px); }
+    .dice-preserve-toggle input:focus-visible + .dice-toggle-track { outline:2px solid var(--gold); outline-offset:2px; }
     table { width: 100%; border-collapse: collapse; text-align: left; }
     th { font-family: 'Cinzel', serif; font-size: 0.82rem; background: var(--bg-secondary); color: var(--gold); padding: 0.85rem 1rem; }
     td { padding: 0.78rem 1rem; border-bottom: 1px solid rgba(198,154,60,0.22); }
@@ -244,6 +262,7 @@
     .chat-msg.from-char { border-left-color: #351B45; background: #F8F1E3; }
     .chat-msg-head { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 0.25rem; }
     .chat-form { padding: 1rem 1.2rem; background: var(--bg-warm); border-top: 1px solid rgba(198,154,60,0.45); display: grid; grid-template-columns: 180px 150px 1fr auto; gap: 0.65rem; align-items: center; }
+    .chat-message-input { min-height:3.2rem; max-height:12rem; resize:vertical; line-height:1.4; white-space:pre-wrap; }
 
     .modal-backdrop { position: fixed; inset: 0; background: rgba(18,7,26,0.78); backdrop-filter: blur(3px); display: none; align-items: center; justify-content: center; padding: 1rem; z-index: 200; }
     .modal-backdrop.open { display: flex; }
@@ -290,6 +309,76 @@
   }
 }
 
+
+/* Directorio de personajes en Administración */
+.admin-character-form { width:100%; }
+.admin-character-directory { width:100%; margin-top:1.2rem; }
+.admin-character-directory input { width:100%; max-width:100%; margin-bottom:.9rem; }
+.admin-character-cards {
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(min(100%,260px),1fr));
+  gap:.7rem;
+  width:100%;
+  align-items:stretch;
+}
+.admin-character-card {
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:.6rem;
+  min-width:0;
+  padding:.65rem;
+  box-shadow:none;
+}
+.admin-character-card-info { display:flex; align-items:center; gap:.6rem; min-width:0; }
+.admin-character-card-info > div { min-width:0; overflow-wrap:anywhere; }
+.admin-character-card-actions { display:flex; gap:.35rem; flex-wrap:wrap; justify-content:flex-end; }
+@media(max-width:560px) {
+  .admin-character-cards { grid-template-columns:1fr; }
+  .admin-character-card { align-items:flex-start; flex-direction:column; }
+  .admin-character-card-actions { width:100%; justify-content:flex-start; }
+}
+
+/* Indicador de presencia en línea */
+#onlineCountBtn { white-space:nowrap; font-size:.88rem; padding:.5rem .75rem; }
+.online-presence-list { display:grid; gap:.65rem; }
+.online-presence-person { display:flex; align-items:center; gap:.75rem; padding:.6rem .7rem; border:1px solid rgba(198,154,60,.25); border-radius:9px; background:rgba(255,255,255,.55); }
+.online-presence-avatar { width:42px; height:42px; flex:0 0 42px; border-radius:50%; object-fit:cover; background:#e8dfcf; border:1px solid rgba(198,154,60,.5); }
+.online-presence-dot { width:8px; height:8px; border-radius:50%; background:#36a66a; display:inline-block; margin-right:.35rem; }
+@media(max-width:700px){ #onlineCountBtn { font-size:.78rem; padding:.42rem .55rem; } }
+
+    /* Mensajería integrada al lenguaje visual de Rosewood */
+    .messages-directory, .messages-workspace { border:1px solid rgba(198,154,60,.48); background:rgba(251,245,233,.94); }
+    .messages-directory { padding:1.15rem 1.25rem 1.3rem; margin-bottom:1.15rem; }
+    .messages-directory-heading { display:flex; justify-content:space-between; align-items:center; gap:1rem; padding-bottom:.8rem; border-bottom:1px solid rgba(198,154,60,.4); }
+    .messages-directory-heading .font-meta { color:var(--gold-dark); letter-spacing:.16em; font-size:.7rem; }
+    .messages-directory-heading h3 { color:var(--ink-dark); margin:.15rem 0 0; font-family:'Cinzel',serif; }
+    .messages-player-strip { display:flex; align-items:flex-start; gap:1rem; overflow-x:auto; padding:1rem .15rem .2rem; scrollbar-color:var(--gold) transparent; }
+    .messages-player-tab { flex:0 0 94px; width:94px; border:1px solid transparent; border-radius:9px; padding:.45rem .35rem .55rem; background:transparent; color:var(--ink-dark); cursor:pointer; font-family:'Crimson Pro',serif; transition:.18s ease; position:relative; }
+    .messages-player-tab:hover { background:rgba(198,154,60,.1); border-color:rgba(198,154,60,.45); transform:translateY(-2px); }
+    .messages-player-tab.active { background:rgba(53,27,69,.08); border-color:var(--gold); box-shadow:inset 0 0 0 1px rgba(198,154,60,.18); }
+    .messages-player-photo { display:block; width:62px; height:62px; border-radius:50%; margin:0 auto .42rem; overflow:hidden; border:2px solid var(--gold); background:linear-gradient(145deg,#351B45,#24102F); color:#FBF5E9; font:1.3rem 'Cinzel',serif; line-height:58px; text-align:center; box-shadow:0 2px 8px rgba(36,16,47,.18); }
+    .messages-player-photo img { width:100%; height:100%; object-fit:cover; display:block; }
+    .messages-player-name { display:block; font-size:.9rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .messages-player-sub { display:block; color:var(--ink-muted); font-size:.72rem; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .messages-unread-dot { position:absolute; top:3px; right:13px; width:10px; height:10px; border-radius:50%; background:#9E3F42; border:2px solid #FBF5E9; }
+    .messages-empty-strip { color:var(--ink-muted); font-style:italic; margin:.3rem 0; }
+    .messages-workspace { min-height:420px; padding:1.2rem; overflow:hidden; }
+    .messages-empty-state { min-height:385px; display:flex; flex-direction:column; align-items:center; justify-content:center; text-align:center; padding:2rem 1rem; }
+    .messages-empty-crest { width:66px; height:66px; border:1px solid var(--gold); border-radius:50%; display:grid; place-items:center; color:var(--gold-dark); font-size:2rem; margin-bottom:1rem; background:rgba(53,27,69,.05); }
+    .messages-empty-state h3 { color:var(--ink-dark); font-family:'Cinzel',serif; margin:0 0 .35rem; }
+    .messages-empty-state p { color:var(--ink-muted); max-width:430px; margin:0; }
+    .messages-conversation-header { display:flex; justify-content:space-between; align-items:center; gap:1rem; flex-wrap:wrap; padding-bottom:1rem; border-bottom:1px solid rgba(198,154,60,.45); }
+    .messages-selected-identity { display:flex; align-items:center; gap:.8rem; }
+    .messages-selected-identity .messages-player-photo { width:52px; height:52px; line-height:48px; margin:0; flex:0 0 52px; }
+    .messages-selected-identity strong { display:block; color:var(--ink-dark); font-family:'Cinzel',serif; }
+    .messages-selected-identity small { color:var(--ink-muted); }
+    .messages-kind-tabs { display:flex; gap:.45rem; flex-wrap:wrap; }
+    .messages-conversation-content { min-height:300px; display:flex; align-items:center; justify-content:center; padding:1.5rem; text-align:center; }
+    .messages-coming-soon { max-width:480px; color:var(--ink-muted); }
+    .messages-coming-soon strong { display:block; color:var(--ink-dark); font-family:'Cinzel',serif; margin-bottom:.35rem; }
+    @media(max-width:640px) { .messages-directory,.messages-workspace { padding:1rem; } .messages-player-strip { gap:.55rem; } .messages-player-tab { flex-basis:82px; width:82px; } .messages-player-photo { width:55px;height:55px;line-height:51px; } .messages-workspace { min-height:370px; } .messages-empty-state { min-height:330px; } }
+
 </style>
 </head>
 <body>
@@ -303,15 +392,15 @@
       </div>
       <button class="mobile-toggle" onclick="toggleMobileMenu()">Menú</button>
       <ul class="nav-links">
-        <li><button class="nav-btn active" data-view="inicio" onclick="navigateTo('inicio')">Inicio</button></li>
         <li><button class="nav-btn" data-view="tablon" onclick="navigateTo('tablon')">Tablón</button></li>
         <li><button class="nav-btn" data-view="dados" onclick="navigateTo('dados')">Dados</button></li>
         <li><button class="nav-btn" data-view="dormitorios" onclick="navigateTo('dormitorios')">Dormitorios</button></li>
         <li><button class="nav-btn" data-view="npc" onclick="navigateTo('npc')">NPC</button></li>
         <li><button class="nav-btn" data-view="cronicas" onclick="navigateTo('cronicas')">Crónicas</button></li>
-        <li><button class="nav-btn" data-view="chat" onclick="navigateTo('chat')">Chat</button></li>
+        <li><button class="nav-btn" data-view="mensajes" onclick="navigateTo('mensajes')">Mensajes</button></li>
       </ul>
       <div class="nav-actions">
+        <button class="btn-outline-gold" id="onlineCountBtn" onclick="openOnlineModal()" style="display:none;" aria-label="Ver personajes conectados">🟢 <span id="onlineCountNumber">0</span> en línea</button>
         <button class="btn-outline-gold" id="authBtn" onclick="openAuthModal()">Iniciar sesión</button>
         <button class="btn-outline-gold" id="charactersBtn" onclick="openCharactersModal()" style="display:none;">Mis personajes</button>
         <button class="btn-outline-gold" onclick="openAdminSection()">Administración</button>
@@ -377,7 +466,15 @@
         <div style="margin-top:2.5rem;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.8rem;">
             <h3>Historial Público de Tiradas</h3>
-            <button class="btn-primary-arcane" onclick="refreshRolls(true)">Actualizar historial</button>
+            <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;">
+              <button class="btn-primary-arcane" onclick="refreshRolls(true)">↻ Actualizar historial</button>
+              <label class="dice-preserve-toggle" title="Si está activado, la nueva partida conservará las tiradas anteriores.">
+                <input type="checkbox" id="preserveDiceHistory" />
+                <span class="dice-toggle-track"><span></span></span>
+                <span>Conservar historial (no borrar al iniciar)</span>
+              </label>
+              <button id="newDiceGameBtn" class="btn-danger" onclick="startNewDiceGame()" style="display:inline-flex;">Nueva partida · Vaciar historial</button>
+            </div>
           </div>
           <div class="history-table-wrap"><table><thead><tr><th>Personaje</th><th>Dado</th><th>Resultado</th><th>Acción / Hechizo</th><th>Fecha y hora</th></tr></thead><tbody id="rollsHistoryBody"></tbody></table></div>
         </div>
@@ -394,15 +491,14 @@
 
     <section id="view-npc" class="view-section paper-texture">
       <div class="container">
-        <div class="section-header"><h2>Profesores y Estudiantes</h2><p id="npcDescDisplay">Haz clic en cualquier perfil para consultar su ficha, sus publicaciones o escribirle por chat privado.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
+        <div class="section-header"><h2>Personajes</h2><p id="npcDescDisplay">Explora los perfiles de Rosewood y conoce también a los personajes que existen fuera de la academia.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
         <div class="filter-bar" id="npcFilters">
-          <button class="filter-chip active" onclick="filterNpcs('Todos', this)">Todos</button>
-          <button class="filter-chip" onclick="filterNpcs('Profesor', this)">Profesores</button>
-          <button class="filter-chip" onclick="filterNpcs('Estudiante', this)">Estudiantes</button>
+          <button class="filter-chip active" onclick="filterNpcs('Profesor', this)">Profesores</button>
           <button class="filter-chip" onclick="filterNpcs('Amaranthe', this)">Amaranthe</button>
           <button class="filter-chip" onclick="filterNpcs('Veritastra', this)">Veritastra</button>
           <button class="filter-chip" onclick="filterNpcs('Oathwyn', this)">Oathwyn</button>
           <button class="filter-chip" onclick="filterNpcs('Aurelion', this)">Aurelion</button>
+          <button class="filter-chip" onclick="filterNpcs('NPC', this)">NPC</button>
         </div>
         <div class="npc-grid" id="npcGrid"></div>
       </div>
@@ -415,34 +511,47 @@
       </div>
     </section>
 
-    <section id="view-chat" class="view-section paper-texture">
+    <section id="view-mensajes" class="view-section paper-texture">
       <div class="container">
-        <div class="section-header"><h2>Salón de Mensajería y Chat</h2><p id="chatDescDisplay">Comunícate en tiempo real con otros estudiantes de Rosewood, narra escenas o coordina partidas.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="chat-box">
-          <div class="chat-topbar">
-            <div class="chat-channels">
-              <button class="chat-channel-btn active" onclick="switchChatChannel('Salón Principal', this)">Aula 1</button>
-              <button class="chat-channel-btn" onclick="switchChatChannel('Aula 2', this)">Aula 2</button>
-              <button class="chat-channel-btn" onclick="switchChatChannel('Rol Narrativo', this)">Rol Narrativo</button>
-              <button class="chat-channel-btn" onclick="switchChatChannel('Off-Rol', this)">Off-Rol</button>
-            </div>
-            <div style="display:flex;gap:.5rem;flex-wrap:wrap;align-items:center;">
-              <button class="btn-outline-gold" onclick="toggleChatBackgroundPanel()">Personalizar fondo</button>
-              <button class="btn-outline-gold" onclick="refreshChat(true)">Actualizar</button>
-            </div>
+        <div class="section-header">
+          <h2>Mensajería de Rosewood</h2>
+          <p>Un espacio para mantener cada conversación en su lugar.</p>
+          <div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div>
+        </div>
+        <div class="messages-directory card">
+          <div class="messages-directory-heading">
+            <div><span class="font-meta">CORRESPONDENCIA</span><h3>Jugadoras</h3></div>
+            <span class="badge" id="messagesPlayerCount">0 jugadoras</span>
           </div>
-          <div class="chat-background-panel" id="chatBackgroundPanel">
-            <label for="chatBgColor">Color de fondo</label><input id="chatBgColor" type="color" value="#f5ecd9" onchange="updateChatBackgroundColor(this.value)">
-            <label for="chatBgImage">Imagen</label><input id="chatBgImage" type="file" accept="image/png,image/jpeg,image/webp,image/gif" onchange="updateChatBackgroundImage(this)">
-            <button class="btn-outline-gold" onclick="resetChatBackground()">Restaurar original</button>
-            <span style="font-size:.72rem;color:var(--ink-muted);">Tu elección es privada y se guarda en este dispositivo.</span>
+          <div id="messagesPlayerStrip" class="messages-player-strip">
+            <p class="messages-empty-strip">Inicia sesión para ver las jugadoras y sus personajes.</p>
           </div>
-          <div class="chat-messages" id="chatMessages"></div>
-          <div class="chat-form">
-            <input id="chatAuthor" class="form-control" type="text" placeholder="Tu personaje o NPC (ej. Lupus) *" maxlength="50" />
-            <select id="chatHouse" class="form-control"><option value="Estudiante">Sin casa</option><option value="Amaranthe">Amaranthe</option><option value="Veritastra">Veritastra</option><option value="Oathwyn">Oathwyn</option><option value="Aurelion">Aurelion</option><option value="Dirección">Dirección</option></select>
-            <input id="chatMessageInput" class="form-control" type="text" placeholder="Escribe un mensaje..." maxlength="500" onkeydown="if(event.key==='Enter') sendChatMessage();" />
-            <button class="btn-primary-arcane" id="sendChatBtn" onclick="sendChatMessage()">Enviar</button>
+        </div>
+        <div class="messages-directory card" style="margin-top:1rem;">
+          <div class="messages-directory-heading"><div><span class="font-meta">CONVERSACIONES COMPARTIDAS</span><h3>Grupos</h3></div><button class="btn-primary-arcane" type="button" onclick="openCreateMessageGroup()">＋ Crear grupo</button></div>
+          <div id="messagesGroupsList" class="messages-player-strip"><p class="messages-empty-strip">Inicia sesión para consultar tus grupos.</p></div>
+          <div id="messagesGroupComposer" style="display:none;padding:.8rem 0;">
+            <input id="messagesGroupName" class="form-control" maxlength="70" placeholder="Nombre del grupo">
+            <p class="font-meta" style="margin:.7rem 0 .35rem;">INVITAR JUGADORAS</p><div id="messagesGroupPlayers" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div>
+            <p class="font-meta" style="margin:.7rem 0 .35rem;">AÑADIR PERSONAJES NPC (SOLO DIRECCIÓN)</p><div id="messagesGroupNpcs" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div>
+            <div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn-primary-arcane" type="button" onclick="createMessageGroup()">Crear</button><button class="btn-secondary" type="button" onclick="closeCreateMessageGroup()">Cancelar</button></div>
+          </div>
+          <div id="messagesGroupConversation" style="display:none;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);"></div>
+        </div>
+        <div class="messages-workspace card" id="messagesWorkspace">
+          <div class="messages-empty-state" id="messagesEmptyState">
+            <div class="messages-empty-crest">✉</div>
+            <h3>Elige una jugadora</h3>
+            <p>Selecciona uno de los retratos de arriba para abrir aquí sus conversaciones.</p>
+          </div>
+          <div id="messagesConversationView" style="display:none;">
+            <div class="messages-conversation-header">
+              <div class="messages-selected-identity" id="messagesSelectedIdentity"></div>
+              <div class="messages-kind-tabs" role="tablist" aria-label="Tipo de conversación">
+                <span class="filter-chip active">Privados <span id="messagesPrivadosBadge"></span></span>
+              </div>
+            </div>
+            <div id="messagesConversationContent" class="messages-conversation-content"></div>
           </div>
         </div>
       </div>
@@ -450,7 +559,7 @@
 
     <section id="view-admin" class="view-section paper-texture">
       <div class="container">
-        <div class="section-header"><h2>Panel de Administración</h2><p>Edita textos, fotografías, dormitorios, uniformes, personajes, avisos, crónicas y chats privados.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
+        <div class="section-header"><h2>Panel de Administración</h2><p>Edita textos, fotografías, dormitorios, uniformes, personajes, avisos y crónicas.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
         <div class="card">
           <div class="admin-tabs">
             <button class="filter-chip active" onclick="switchAdminTab('config', this)">Portada y Textos</button>
@@ -458,8 +567,6 @@
             <button class="filter-chip" onclick="switchAdminTab('houses', this)">Dormitorios / Uniformes</button>
             <button class="filter-chip" onclick="switchAdminTab('npcs', this)">Profesores / Estudiantes</button>
             <button class="filter-chip" onclick="switchAdminTab('chronicles', this)">Crónicas</button>
-            <button class="filter-chip" onclick="switchAdminTab('classrooms', this)">Aulas</button>
-            <button class="filter-chip" onclick="switchAdminTab('pms', this)">Chats Privados</button>
             <button class="filter-chip" onclick="switchAdminTab('server', this)">Google Sheets</button>
           </div>
 
@@ -535,21 +642,26 @@
           </div>
 
           <div id="admin-tab-npcs" class="admin-panel">
-            <div class="admin-grid">
+            <div class="admin-character-form">
               <div>
-                <h3 style="margin-bottom:1rem;" id="npcFormTitle">Añadir Profesor / Estudiante</h3>
+                <h3 style="margin-bottom:1rem;" id="npcFormTitle">Añadir Personaje</h3>
                 <input type="hidden" id="editNpcId" />
-                <div class="form-group"><label>Tipo</label><select id="npcTypeInput" class="form-control"><option value="Profesor">Profesor</option><option value="Estudiante">Estudiante</option></select></div>
+                <div class="form-group"><label>Tipo</label><select id="npcTypeInput" class="form-control" onchange="updateNpcTypeFields()"><option value="Profesor">Profesor</option><option value="Estudiante">Estudiante</option><option value="NPC">NPC (sin dormitorio)</option></select></div>
                 <div class="form-group"><label>Nombre *</label><input id="npcNameInput" class="form-control" type="text" /></div>
                 <div class="form-group"><label>Cargo / Año o Especialidad *</label><input id="npcRoleInput" class="form-control" type="text" placeholder="Ej. Maestra de Astrología / 3er Año" /></div>
-                <div class="form-group"><label>Dormitorio / Afiliación</label><select id="npcHouseInput" class="form-control"><option value="Dirección">Dirección</option><option value="Amaranthe">Amaranthe</option><option value="Veritastra">Veritastra</option><option value="Oathwyn">Oathwyn</option><option value="Aurelion">Aurelion</option></select></div>
+                <div class="form-group"><label>Dormitorio / Afiliación</label><select id="npcHouseInput" class="form-control"><option value="">No aplica / Sin dormitorio</option><option value="Dirección">Dirección</option><option value="Amaranthe">Amaranthe</option><option value="Veritastra">Veritastra</option><option value="Oathwyn">Oathwyn</option><option value="Aurelion">Aurelion</option><option value="NPC">NPC (fuera de Rosewood)</option></select></div>
                 <div class="form-group"><label>Fotografía</label><div class="upload-row"><input id="npcPhotoInput" class="form-control" type="text" placeholder="URL o sube imagen" oninput="updateNpcPreview()" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'npcPhotoInput',280,updateNpcPreview)" /></label><img id="npcPreviewImg" class="img-preview-mini" alt="" /></div></div>
                 <div class="form-group"><label>Descripción breve</label><textarea id="npcDescInput" class="form-control" rows="2"></textarea></div>
                 <div class="form-group"><label>Ficha del personaje (linaje, magia, historia, rasgos)</label><textarea id="npcSheetInput" class="form-control" rows="4" placeholder="Detalles de su ficha completa..."></textarea></div>
                 <div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="saveNpcAdmin()">Guardar Personaje</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetNpcForm()">Limpiar</button></div>
               </div>
-              <div><h3 style="margin-bottom:1rem;">Personajes Registrados</h3><div id="adminNpcsList"></div></div>
             </div>
+
+            <section class="admin-character-directory">
+              <h3 style="margin:1.5rem 0 .75rem;">Personajes registrados</h3>
+              <input id="adminCharacterSearch" class="form-control" type="search" placeholder="Buscar por nombre, tipo o dormitorio..." oninput="renderAdminCharacterDirectory(this.value)" aria-label="Buscar personajes por nombre, tipo o dormitorio" />
+              <div id="adminNpcsList" class="admin-character-cards"></div>
+            </section>
           </div>
 
           <div id="admin-tab-chronicles" class="admin-panel">
@@ -567,23 +679,6 @@
             </div>
           </div>
 
-          <div id="admin-tab-classrooms" class="admin-panel">
-            <div style="max-width:760px;">
-              <h3 style="margin-bottom:.5rem;">Administrar estudiantes de las aulas</h3>
-              <p style="color:var(--ink-muted); margin-bottom:1rem;">Selecciona un aula y marca las cuentas que podrán verla en el chat.</p>
-              <div class="form-group" style="max-width:360px;"><label>Aula</label><select id="classroomAdminSelect" class="form-control" onchange="loadClassroomMembers()"><option value="aula1">Aula 1</option><option value="aula2">Aula 2</option></select></div>
-              <div id="classroomMembersList"><p style="color:var(--ink-muted);">Pulsa «Cargar usuarios» para consultar las cuentas registradas.</p></div>
-              <div style="display:flex;gap:.6rem;flex-wrap:wrap;margin-top:1rem;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="loadClassroomMembers()">Cargar usuarios</button><button class="btn-primary-arcane" onclick="saveClassroomMembers()">Guardar aula</button></div>
-            </div>
-          </div>
-
-          <div id="admin-tab-pms" class="admin-panel">
-            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.6rem; margin-bottom:1rem;">
-              <div><h3>Bandeja de Chats Privados</h3><p style="color:var(--ink-muted); font-size:0.95rem;">Lee lo que los jugadores escribieron a cada personaje y respóndeles actuando como ese personaje.</p></div>
-              <button class="btn-primary-arcane" onclick="loadAdminPrivateInbox()">Actualizar Bandeja</button>
-            </div>
-            <div id="adminPmInbox"></div>
-          </div>
 
           <div id="admin-tab-server" class="admin-panel">
             <h3 style="margin-bottom:0.6rem;">Conexión con Google Apps Script & Google Sheets</h3>
@@ -623,7 +718,11 @@
       <div id="charactersList" style="display:grid;gap:0.7rem;"></div>
       <div id="newCharacterForm" style="margin-top:1.2rem;">
         <div class="form-group"><label>Nombre del personaje</label><input id="newCharacterName" class="form-control" maxlength="60" placeholder="Nombre de tu personaje" /></div>
-        <div class="form-group"><label>Dormitorio (opcional)</label><input id="newCharacterDorm" class="form-control" maxlength="60" placeholder="Ej. Amaranthe" /></div>
+        <div class="form-group"><label>Dormitorio (opcional)</label><select id="newCharacterDorm" class="form-control"><option value="">Por asignar</option><option>Amaranthe</option><option>Veritastra</option><option>Oathwyn</option><option>Aurelion</option></select></div>
+        <div class="form-group"><label>Cargo / Año</label><input id="newCharacterRole" class="form-control" maxlength="100" placeholder="Ej. Estudiante de segundo año" /></div>
+        <div class="form-group"><label>Fotografía (URL)</label><input id="newCharacterPhoto" class="form-control" placeholder="https://..." /></div>
+        <div class="form-group"><label>Presentación</label><textarea id="newCharacterDescription" class="form-control" rows="2" placeholder="Una breve presentación de tu personaje"></textarea></div>
+        <div class="form-group"><label>Ficha del personaje</label><textarea id="newCharacterSheet" class="form-control" rows="4" placeholder="Linaje, magia, historia, rasgos..."></textarea></div>
         <button class="btn-primary-arcane" id="createCharacterBtn" onclick="createLegaciesCharacter()">Crear personaje</button>
       </div>
       <p style="font-size:0.82rem;color:var(--ink-muted);margin-top:0.8rem;">La selección de personaje se guarda en este navegador. Los datos de cada ficha se guardan en tu cuenta.</p>
@@ -712,14 +811,14 @@
       { id: "c1", title: "Capítulo I: El Eco de Rosewood", date: "Ciclo de Otoño — Año 412", body: "Cuando las campanas de Rosewood sonaron sin viento, los prefectos descendieron a las bóvedas para descubrir que los emblemas del Cisne, el Zorro, el Ciervo y el León habían vuelto a brillar.", image: "" }
     ];
     const DEFAULT_CHAT = [
-      { id: "m0", timestamp: "Inicio de ciclo", channel: "Salón Principal", author: "Rectora Seraphina", house: "Dirección", message: "Bienvenidos al salón de mensajería oficial de Academia Rosewood." }
+      { id: "m0", timestamp: "Inicio de ciclo", channel: "Rol Narrativo", author: "Rectora Seraphina", house: "Dirección", message: "Bienvenidos al salón de mensajería oficial de Academia Rosewood." }
     ];
 
     let state = {
       config: { ...DEFAULT_CONFIG }, houses: [], posts: [], npcs: [], npcPosts: [], chronicles: [], rolls: [], chat: [], privateMsgs: [],
-      categoryFilter: "Todas", npcFilter: "Todos", chatChannel: "Salón Principal", currentView: "inicio",
-      activeProfileId: null, activeProfileTab: "sheet", activePmPlayerTarget: "",
-      user: null, classroomMemberships: {}, classroomUsers: [],
+      categoryFilter: "Todas", npcFilter: "Profesor", chatChannel: "Rol Narrativo", currentView: "inicio",
+      activeProfileId: null, activeProfileTab: "sheet", activePmPlayerTarget: "", playerProfiles: [], adminCharacterQuery: "",
+      user: null,
       adminPasswordCache: sessionStorage.getItem("legacies_admin_pass") || "",
       scriptUrl: localStorage.getItem("legacies_script_url") || DEFAULT_SCRIPT_URL
     };
@@ -770,7 +869,7 @@
       document.getElementById("housesDescDisplay").textContent = c.housesDesc;
       document.getElementById("npcDescDisplay").textContent = c.npcDesc;
       document.getElementById("chroniclesDescDisplay").textContent = c.chronDesc;
-      document.getElementById("chatDescDisplay").textContent = c.chatDesc;
+      const chatDesc = document.getElementById("chatDescDisplay"); if (chatDesc) chatDesc.textContent = c.chatDesc;
 
       const heroEl = document.getElementById("heroContainer");
       const bg = safePhotoSrc(c.heroBg);
@@ -787,16 +886,129 @@
       }
     }
 
+    let activeMessagesOwnerUid = "";
+    let activeMessagesKind = "privados";
+    let messagesUnread = { privados:0 };
+    function messageReadMarkerKey(type, conversation) { return `legacies_read_${state.user?.uid||"anon"}_${type}_${conversation}`; }
+    function groupMessagePlayers() {
+      const groups = new Map();
+      const profilesForViewer = (state.user && state.user.uid === LEGACIES_ADMIN_UID) ? (state.playerProfiles || []) : (state.playerProfiles || []).filter(profile => profile.ownerUid === (state.user && state.user.uid));
+      profilesForViewer.forEach(profile => {
+        const owner = profile.ownerUid || "unknown";
+        if (!groups.has(owner)) groups.set(owner, { ownerUid:owner, label:profile.ownerName || profile.playerName || profile.displayName || profile.name || "Jugadora", profiles:[] });
+        groups.get(owner).profiles.push(profile);
+      });
+      return [...groups.values()].map(g => { g.profiles.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"es")); const lead=g.profiles[0]; g.label=lead.ownerName || lead.playerName || lead.displayName || lead.name || g.label; g.photo=lead.photo || ""; return g; }).sort((a,b)=>a.label.localeCompare(b.label,"es"));
+    }
+    function renderMessagesDirectory() {
+      const strip=document.getElementById("messagesPlayerStrip"), count=document.getElementById("messagesPlayerCount");
+      if(!strip||!count)return;
+      const players=groupMessagePlayers(); count.textContent=`${players.length} ${players.length===1?"jugadora":"jugadoras"}`;
+      if(!players.length){strip.innerHTML=`<p class="messages-empty-strip">${state.user?"Todavía no hay perfiles de personajes publicados.":"Inicia sesión para ver las jugadoras y sus personajes."}</p>`; return;}
+      if(activeMessagesOwnerUid && !players.some(p=>p.ownerUid===activeMessagesOwnerUid)) activeMessagesOwnerUid="";
+      strip.innerHTML=players.map(player=>{
+        const selected=player.ownerUid===activeMessagesOwnerUid;
+        const photo=safePhotoSrc(player.photo);
+        const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.label)}">`:escapeHtml((player.label||"?").charAt(0).toUpperCase());
+        const unread=(state.user?.uid===LEGACIES_ADMIN_UID)?(messagesUnread.byOwner?.[player.ownerUid]||0):messagesUnread.total||0;
+        return `<button type="button" class="messages-player-tab ${selected?"active":""}" onclick="selectMessagesPlayer('${escapeHtml(player.ownerUid)}')" aria-pressed="${selected}"><span class="messages-player-photo">${avatar}</span>${unread?`<span class="messages-unread-dot" title="${unread} mensajes sin leer"></span>`:""}<strong class="messages-player-name">${escapeHtml(player.label)}</strong><small class="messages-player-sub">${player.profiles.length} ${player.profiles.length===1?"personaje":"personajes"}</small></button>`;
+      }).join("");
+    }
+    async function refreshMessagesUnread() {
+      if(!state.user || !getScriptUrl()) return;
+      try {
+        const token=await getCurrentFirebaseIdToken();
+        const res=await apiPost({action:"getUnreadCounts",idToken:token,ownerUid:(state.user.uid===LEGACIES_ADMIN_UID?"":activeMessagesOwnerUid),channels:[]});
+        if(res&&res.ok) { messagesUnread=res.unread||messagesUnread; messagesUnread.total=Number(messagesUnread.privados||0); }
+        const p=document.getElementById("messagesPrivadosBadge");
+        if(p)p.innerHTML=messagesUnread.privados?`<span class="badge" style="background:#9E3F42;color:white;">${messagesUnread.privados}</span>`:"";
+      } catch(e){console.warn("No se pudieron actualizar las notificaciones",e);}
+    }
+    async function selectMessagesPlayer(ownerUid) {
+      activeMessagesOwnerUid=String(ownerUid||""); activeMessagesKind="privados";
+      renderMessagesDirectory(); await renderMessagesConversation();
+    }
+    async function markMessagesRead(type,conversation,ownerUid="") {
+      if(!state.user) return;
+      try {
+        const token=await getCurrentFirebaseIdToken();
+        await apiPost({action:"markMessagesRead",idToken:token,type,conversation,ownerUid});
+      } catch(e){console.warn("No se pudo marcar como leído",e);}
+    }
+    async function renderMessagesConversation() {
+      const empty=document.getElementById("messagesEmptyState"), view=document.getElementById("messagesConversationView"), identity=document.getElementById("messagesSelectedIdentity"), content=document.getElementById("messagesConversationContent");
+      if(!empty||!view||!identity||!content)return;
+      const admin=state.user?.uid===LEGACIES_ADMIN_UID;
+      const player=groupMessagePlayers().find(p=>p.ownerUid===activeMessagesOwnerUid);
+      if(!player){empty.style.display="flex";view.style.display="none";return;}
+      empty.style.display="none";view.style.display="block";
+      const photo=safePhotoSrc(player.photo); const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.label)}">`:escapeHtml((player.label||"?").charAt(0).toUpperCase());
+      identity.innerHTML=`<span class="messages-player-photo">${avatar}</span><span><strong>${escapeHtml(player.label)}</strong><small>${player.profiles.map(p=>escapeHtml(p.name||"Personaje")).join(" · ")}</small></span>`;
+      content.innerHTML='<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Cargando conversaciones privadas…</p>';
+      try {
+        const token=await getCurrentFirebaseIdToken(); if(!token) throw new Error("Inicia sesión para consultar tus mensajes.");
+        if(admin){const legacyMap=[];(state.playerProfiles||[]).forEach(profile=>{if(profile.ownerUid&&profile.name)legacyMap.push({playerName:profile.name,ownerUid:profile.ownerUid});});await apiPost({action:"migratePrivateChatOwners",idToken:token,mapping:legacyMap});}
+        const res=await apiPost({action:"getPrivateChat",idToken:token,ownerUid:player.ownerUid}); if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudieron cargar los mensajes.");
+        const messages=Array.isArray(res.messages)?res.messages:[]; const grouped={};
+        messages.forEach(m=>{const k=String(m.npcId||"personaje");if(!grouped[k])grouped[k]={npcId:m.npcId,npcName:m.npcName||"Dirección",messages:[]};grouped[k].messages.push(m);});
+        const npcOptions=(state.npcs||[]).map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join("");
+        const threads=Object.values(grouped); const threadHtml=threads.length?threads.map(t=>`<section style="margin-bottom:1rem;border:1px solid rgba(198,154,60,.4);border-radius:8px;padding:.8rem;background:#fffdf8;"><h4 style="font-family:Cinzel,serif;color:var(--ink-dark);margin-bottom:.6rem;">${escapeHtml(t.npcName)}</h4>${t.messages.map(m=>`<div class="chat-msg ${m.senderType==='character'?'from-char':''}" style="margin:.45rem 0;"><div class="chat-msg-head"><strong>${escapeHtml(m.senderType==='character'?m.npcName:(m.playerName||player.label))}</strong><span class="meta-date">${escapeHtml(m.timestamp||"")}</span></div><p style="white-space:pre-wrap;">${escapeHtml(m.message||"")}</p></div>`).join("")}</section>`).join(""):`<p style="text-align:center;color:var(--ink-muted);padding:1rem;">Todavía no hay conversaciones privadas para esta cuenta.</p>`;
+        content.innerHTML=`<div style="max-height:440px;overflow:auto;padding:.3rem;">${threadHtml}</div><div style="display:grid;grid-template-columns:1fr;gap:.55rem;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);">${admin?`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Responder como personaje</label>`:`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Enviar mensaje a Dirección</label>`}<select id="messagesNpcSelect" class="form-control">${admin?npcOptions:`<option value="direccion">Dirección</option>${npcOptions}`}</select><textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…"></textarea><button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.label)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button></div>`;
+        const threadIds=Object.keys(grouped); for(const id of threadIds) await markMessagesRead("private",id,player.ownerUid);
+        await refreshMessagesUnread(); renderMessagesDirectory();
+      } catch(e){content.innerHTML=`<p style="color:#8b2635;padding:1rem;">${escapeHtml(e.message)}</p>`;}
+    }
+    let activeMessageGroupId="";
+    function openCreateMessageGroup(){
+      if(!state.user){showToast("Inicia sesión para crear grupos.");return;}
+      const box=document.getElementById("messagesGroupComposer"); if(!box)return; box.style.display="block";
+      const me=state.user.uid, isAdmin=me===LEGACIES_ADMIN_UID;
+      const owners=new Map(); (state.playerProfiles||[]).forEach(p=>{if(p.ownerUid && p.ownerUid!==LEGACIES_ADMIN_UID){if(!owners.has(p.ownerUid))owners.set(p.ownerUid,p.ownerName||p.playerName||p.displayName||p.name||"Jugadora");}});
+      const playerBox=document.getElementById("messagesGroupPlayers"); if(playerBox) playerBox.innerHTML=[...owners].map(([uid,name])=>`<label><input type="checkbox" class="msg-group-player" value="${escapeHtml(uid)}" ${uid===me?"checked":""}> ${escapeHtml(name)}</label>`).join("") || "<small>No hay jugadoras registradas.</small>";
+      const npcBox=document.getElementById("messagesGroupNpcs"); if(npcBox) npcBox.innerHTML=isAdmin?(state.npcs||[]).map(n=>`<label><input type="checkbox" class="msg-group-npc" value="${escapeHtml(n.id)}"> ${escapeHtml(n.name)}</label>`).join("")||"<small>No hay NPC registrados.</small>":"<small>Dirección puede añadir NPC al grupo.</small>";
+    }
+    function closeCreateMessageGroup(){const box=document.getElementById("messagesGroupComposer");if(box)box.style.display="none";}
+    async function loadMessageGroups(){
+      if(!state.user)return; const box=document.getElementById("messagesGroupsList"); if(!box)return;
+      try{const token=await getCurrentFirebaseIdToken();const res=await apiPost({action:"listMessageGroups",idToken:token});if(!res.ok)throw new Error(res.error||"No se pudieron cargar los grupos.");
+        box.innerHTML=(res.groups||[]).map(g=>`<button class="messages-player-tab ${g.id===activeMessageGroupId?"active":""}" onclick="openMessageGroup('${escapeHtml(g.id)}')"><span class="messages-player-photo">♧</span><strong class="messages-player-name">${escapeHtml(g.name)}</strong><small class="messages-player-sub">${Number(g.memberCount)||0} integrantes</small></button>`).join("")||"<p class='messages-empty-strip'>Todavía no perteneces a ningún grupo.</p>";
+      }catch(e){box.innerHTML=`<p class='messages-empty-strip'>${escapeHtml(e.message)}</p>`;}
+    }
+    async function createMessageGroup(){
+      const name=(document.getElementById("messagesGroupName")?.value||"").trim(); if(!name){showToast("Escribe un nombre para el grupo.");return;}
+      const memberUids=[...document.querySelectorAll(".msg-group-player:checked")].map(x=>x.value); const npcIds=[...document.querySelectorAll(".msg-group-npc:checked")].map(x=>x.value);
+      try{const token=await getCurrentFirebaseIdToken();const res=await apiPost({action:"createMessageGroup",idToken:token,name,memberUids,npcIds});if(!res.ok)throw new Error(res.error||"No se pudo crear el grupo.");closeCreateMessageGroup();await loadMessageGroups();await openMessageGroup(res.group.id);showToast("Grupo creado.");}catch(e){showToast(e.message);}
+    }
+    async function openMessageGroup(id){
+      activeMessageGroupId=id;const box=document.getElementById("messagesGroupConversation");if(!box)return;box.style.display="block";box.innerHTML="<p>Cargando grupo…</p>";
+      try{const token=await getCurrentFirebaseIdToken();const res=await apiPost({action:"getMessageGroup",idToken:token,groupId:id});if(!res.ok)throw new Error(res.error||"No se pudo abrir el grupo.");
+        const msgs=(res.messages||[]).map(m=>`<div class="chat-msg"><div class="chat-msg-head"><strong>${escapeHtml(m.senderName||"Participante")}</strong><span class="meta-date">${escapeHtml(m.timestamp||"")}</span></div><p style="white-space:pre-wrap;">${escapeHtml(m.message||"")}</p></div>`).join("");
+        const isAdmin=state.user?.uid===LEGACIES_ADMIN_UID;const npcOpts=isAdmin?(res.group.npcIds||[]).map(id=>{const n=(state.npcs||[]).find(x=>x.id===id);return n?`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`:"";}).join(""):"";
+        box.innerHTML=`<h3>${escapeHtml(res.group.name)}</h3><div style="max-height:300px;overflow:auto;text-align:left;padding:.5rem;">${msgs||"<p>Aún no hay mensajes en este grupo.</p>"}</div><div style="display:grid;gap:.5rem;margin-top:.7rem;">${isAdmin&&npcOpts?`<label>Enviar como NPC <select id="msgGroupNpc" class="form-control"><option value="">Mi cuenta de Dirección</option>${npcOpts}</select></label>`:""}<textarea id="msgGroupText" class="form-control" rows="2" maxlength="3000" placeholder="Escribe al grupo…"></textarea><button class="btn-primary-arcane" onclick="sendMessageGroup('${escapeHtml(id)}')">Enviar mensaje</button></div>`;
+      }catch(e){box.innerHTML=`<p style="color:#8b2635;">${escapeHtml(e.message)}</p>`;}
+      await loadMessageGroups();
+    }
+    async function sendMessageGroup(id){const input=document.getElementById("msgGroupText"),message=input?.value.trim();if(!message){showToast("Escribe un mensaje.");return;}const npcId=document.getElementById("msgGroupNpc")?.value||"";try{const token=await getCurrentFirebaseIdToken();const res=await apiPost({action:"sendMessageGroup",idToken:token,groupId:id,message,npcId});if(!res.ok)throw new Error(res.error||"No se pudo enviar.");await openMessageGroup(id);}catch(e){showToast(e.message);}}
+
+    async function getCurrentFirebaseIdToken(){ const current=legaciesAuth && legaciesAuth.currentUser; return current ? await current.getIdToken() : ""; }
+    async function sendMessagesPrivate(ownerUid,playerLabel){
+      const input=document.getElementById("messagesPrivateInput"),select=document.getElementById("messagesNpcSelect"); const message=input?input.value.trim():""; if(!message){showToast("Escribe un mensaje antes de enviarlo.");return;}
+      const isAdmin=state.user && state.user.uid===LEGACIES_ADMIN_UID; const npcId=select?select.value:"direccion"; const npc=(state.npcs||[]).find(n=>n.id===npcId); const token=await getCurrentFirebaseIdToken();
+      try{const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId,npcName:npc?npc.name:(isAdmin?"Dirección":"Dirección"),playerName:playerLabel,senderType:isAdmin?"character":"player",message});if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudo enviar.");await renderMessagesConversation();showToast("Mensaje enviado.");}
+      catch(e){showToast(e.message);}
+    }
+
     function navigateTo(view, houseId = null) {
+      const previousView = state.currentView;
       state.currentView = view;
       document.querySelectorAll(".view-section").forEach(s => s.classList.remove("active"));
       const t = document.getElementById("view-" + view); if (t) t.classList.add("active");
       document.querySelectorAll(".nav-btn").forEach(b => b.classList.toggle("active", b.dataset.view === view));
       if (view === "dormitorios") { houseId ? showHouseDetail(houseId) : backToHouses(); }
       if (view === "dados") refreshRolls(false);
-      if (view === "chat") refreshChat(false);
+      if (view === "mensajes") { renderMessagesDirectory(); loadMessageGroups(); refreshMessagesUnread().then(()=>renderMessagesConversation()); }
       document.getElementById("navContainer").classList.remove("menu-open");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      if (previousView !== view) window.scrollTo({ top: 0, behavior: "smooth" });
     }
     function toggleMobileMenu() { document.getElementById("navContainer").classList.toggle("menu-open"); }
 
@@ -849,7 +1061,18 @@
           if (Array.isArray(data.publicacionesNpc)) state.npcPosts = data.publicacionesNpc;
           if (Array.isArray(data.cronicas) && data.cronicas.length) state.chronicles = data.cronicas;
           if (Array.isArray(data.chat) && data.chat.length) state.chat = data.chat;
+          const preservedView = state.currentView;
+          const preservedScrollY = window.scrollY;
           renderAll();
+          // La sincronización de datos no debe sacar al usuario de la sección que está leyendo.
+          state.currentView = preservedView;
+          document.querySelectorAll(".view-section").forEach(section => {
+            section.classList.toggle("active", section.id === "view-" + preservedView);
+          });
+          document.querySelectorAll(".nav-btn").forEach(button => {
+            button.classList.toggle("active", button.dataset.view === preservedView);
+          });
+          requestAnimationFrame(() => window.scrollTo({ top: preservedScrollY, behavior: "instant" }));
         }
       } catch (e) { console.warn("Sync warning:", e); }
     }
@@ -873,8 +1096,69 @@
       if (!list.length) { grid.innerHTML = `<div class="card" style="grid-column:1/-1; text-align:center;">No hay comunicados en esta categoría.</div>`; return; }
       grid.innerHTML = list.map(p => {
         const img = safePhotoSrc(p.image);
-        return `<article class="card ${p.important?'card-important':''}">${img?`<img class="post-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.title)}" loading="lazy" />`:''}<div class="post-meta"><div><span class="badge">${escapeHtml(p.category)}</span>${p.important?' <span class="badge badge-important">★ Importante</span>':''}</div><span class="meta-date">${escapeHtml(p.date)}</span></div><h3 class="post-title">${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p><div class="post-author">Responsable: ${escapeHtml(p.author)}</div></article>`;
+        return `<article class="card ${p.important?'card-important':''}">${img?`<img class="post-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.title)}" loading="lazy" />`:''}<div class="post-meta"><div><span class="badge">${escapeHtml(p.category)}</span>${p.important?' <span class="badge badge-important">★ Importante</span>':''}</div><span class="meta-date">${escapeHtml(p.date)}</span></div><h3 class="post-title">${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p><div class="post-author">Responsable: ${escapeHtml(p.author)}</div><div class="board-reactions" id="boardReactions-${escapeHtml(p.id)}"><span class="board-reaction-hint">Cargando reacciones...</span></div></article>`;
       }).join("");
+      list.forEach(p => loadBoardReactions(p.id));
+    }
+
+    const BOARD_REACTION_EMOJIS = ["👍","❤️","😂","😮","😢","👏"];
+    function boardReactionRef(postId) {
+      return legaciesDb.collection("boardReactions").doc(String(postId)).collection("users");
+    }
+    async function loadBoardReactions(postId) {
+      const area = document.getElementById("boardReactions-" + postId);
+      if (!area) return;
+      if (!state.user) {
+        area.innerHTML = `<span class="board-reaction-hint">Inicia sesión para reaccionar.</span>`;
+        return;
+      }
+      try {
+        const snap = await boardReactionRef(postId).get();
+        const counts = {};
+        let mine = "";
+        snap.forEach(doc => {
+          const data = doc.data() || {};
+          if (!BOARD_REACTION_EMOJIS.includes(data.emoji)) return;
+          counts[data.emoji] = (counts[data.emoji] || 0) + 1;
+          if (doc.id === state.user.uid) mine = data.emoji;
+        });
+        if (!document.getElementById("boardReactions-" + postId)) return;
+        const pills = BOARD_REACTION_EMOJIS
+          .filter(emoji => counts[emoji])
+          .map(emoji => `<button class="board-reaction ${mine===emoji?'selected':''}" onclick="toggleBoardReaction('${escapeHtml(postId)}','${emoji}')" title="Reaccionar con ${emoji}" aria-label="Reaccionar con ${emoji}">${emoji}<span class="board-reaction-count">${counts[emoji]}</span></button>`)
+          .join("");
+        const picker = BOARD_REACTION_EMOJIS
+          .map(emoji => `<button type="button" onclick="toggleBoardReaction('${escapeHtml(postId)}','${emoji}')" title="Reaccionar con ${emoji}" aria-label="Reaccionar con ${emoji}">${emoji}</button>`)
+          .join("");
+        area.innerHTML = `${pills}<div class="board-reaction-picker">${picker}</div><span class="board-reaction-hint">${mine ? 'Tu reacción está marcada. Puedes cambiarla tocando otro emoji.' : 'Deja una reacción a este comunicado.'}</span>`;
+      } catch (error) {
+        area.innerHTML = `<span class="board-reaction-hint">No se pudieron cargar las reacciones.</span>`;
+        console.warn("No se pudieron cargar las reacciones del tablón:", error);
+      }
+    }
+    async function toggleBoardReaction(postId, emoji) {
+      if (!state.user) {
+        openAuthModal();
+        showToast("Inicia sesión para reaccionar a los comunicados.");
+        return;
+      }
+      if (!BOARD_REACTION_EMOJIS.includes(emoji)) return;
+      const ref = boardReactionRef(postId).doc(state.user.uid);
+      try {
+        const current = await ref.get();
+        if (current.exists && current.data().emoji === emoji) {
+          await ref.delete();
+        } else {
+          await ref.set({
+            emoji,
+            updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+          });
+        }
+        await loadBoardReactions(postId);
+      } catch (error) {
+        console.error("Error al guardar la reacción:", error);
+        showToast("No se pudo guardar tu reacción. Revisa las reglas de Firestore.");
+      }
     }
 
     async function executeRoll(diceType) {
@@ -908,6 +1192,36 @@
         showToast("Error: " + err.message);
       } finally { btns.forEach(b => b.disabled = false); }
     }
+    async function startNewDiceGame() {
+      const preserve = document.getElementById("preserveDiceHistory");
+      if (preserve && preserve.checked) { showToast("Se conservará el historial. ¡Que comience la partida!"); return; }
+      if (!state.user || state.user.uid !== LEGACIES_ADMIN_UID) { showToast("Solo Dirección puede iniciar una partida nueva y vaciar el historial público."); return; }
+      if (!(await ensureAdminPassword())) return;
+      if (!confirm("¿Iniciar una partida nueva? Se eliminarán las tiradas anteriores del historial público.")) return;
+      try {
+        const res = await apiPost({ action:"clearRolls", password:state.adminPasswordCache });
+        if (!res || !res.ok) {
+          const diagnostic = [
+            (res && res.error) || "El servidor no confirmó la acción.",
+            res && res.receivedAction ? `Acción recibida: ${res.receivedAction}` : "Acción recibida: no informada",
+            res && res.version ? `Versión del servidor: ${res.version}` : "Versión del servidor: no informada",
+            res && res.action ? `Acción respondida: ${res.action}` : ""
+          ].filter(Boolean).join("\n");
+          console.error("Diagnóstico clearRolls / LEGACIES v25:", { requestAction: "clearRolls", response: res });
+          const box = document.getElementById("diceResultBox");
+          if (box) box.innerHTML = `<span class="font-meta" style="font-size:.78rem;letter-spacing:.12em;color:#F5B7B1;text-transform:uppercase;">Diagnóstico del servidor</span><pre style="white-space:pre-wrap;text-align:left;color:#F5ECD9;font:inherit;margin-top:.6rem;">${escapeHtml(diagnostic)}</pre>`;
+          throw new Error(diagnostic);
+        }
+        console.info("LEGACIES v25: clearRolls confirmado", res);
+        state.rolls=[]; persistLocalData(); renderRollsHistory();
+        const box=document.getElementById("diceResultBox"); if(box) box.innerHTML='<span class="font-meta" style="font-size:.78rem;letter-spacing:.12em;color:#C69A3C;text-transform:uppercase;">Nueva partida</span><p style="color:#E8D9B8;margin-top:.6rem;">El historial está vacío. El Oráculo espera la primera tirada.</p>';
+        showToast("Nueva partida lista. El historial anterior fue eliminado.");
+      } catch (e) {
+        console.error("Error al iniciar partida nueva (LEGACIES v25):", e);
+        showToast("No se pudo iniciar la partida. Revisa el diagnóstico en el panel de Dados.");
+      }
+    }
+
     function renderDiceResult(r) {
       const br = r.diceType === "3d10" && Array.isArray(r.results) ? `<div class="dice-breakdown">${r.results.map(n=>`<div class="die-chip">${escapeHtml(n)}</div>`).join("")}</div>` : "";
       document.getElementById("diceResultBox").innerHTML = `<span class="font-meta" style="font-size:0.78rem; letter-spacing:0.12em; color:#C69A3C; text-transform:uppercase;">${escapeHtml(r.character)} · ${escapeHtml(r.diceType)}</span><div class="dice-main-value">${escapeHtml(r.total)}</div>${br}<p style="color:#F5ECD9; font-style:italic;">${escapeHtml(r.skill || "Tirada general")}</p><span class="font-meta" style="font-size:0.72rem; color:#C69A3C; margin-top:0.4rem;">${escapeHtml(r.timestamp)}</span>`;
@@ -980,7 +1294,7 @@
       const heroBg = imgMain
         ? `background-image: linear-gradient(165deg, ${h.color}B8 0%, rgba(24,9,34,0.92) 88%), url('${imgMain.replace(/'/g,"\\'")}');`
         : `background: linear-gradient(165deg, ${h.color} 0%, #24102F 90%);`;
-      const members = state.npcs.filter(n => normalizeHouseName(n.house) === normalizeHouseName(h.name));
+      const members = [...state.npcs, ...state.playerProfiles.map(profileToDirectoryNpc)].filter(n => normalizeHouseName(n.house) === normalizeHouseName(h.name));
       const students = members.filter(n => String(n.type || "").toLowerCase().includes("estudiante"));
       const teachers = members.filter(n => !String(n.type || "").toLowerCase().includes("estudiante"));
 
@@ -989,7 +1303,7 @@
         const avatar = photo
           ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(member.name)}" />`
           : escapeHtml((member.name || "?").charAt(0).toUpperCase());
-        return `<button type="button" class="house-member-row" onclick="openCharacterProfile('${escapeHtml(member.id)}')" aria-label="Ver perfil de ${escapeHtml(member.name)}">
+        return `<button type="button" class="house-member-row" onclick="${member.isPlayerCharacter?`openPublicCharacterProfile(\'${escapeHtml(member.id)}\')`:`openCharacterProfile(\'${escapeHtml(member.id)}\')`}" aria-label="Ver perfil de ${escapeHtml(member.name)}">
           <span class="house-member-avatar">${avatar}</span>
           <span class="house-member-info"><strong>${escapeHtml(member.name || "Sin nombre")}</strong><span>${escapeHtml(member.role || member.type || "Integrante")}</span></span>
           <span class="badge">Ver perfil</span>
@@ -1079,6 +1393,92 @@
     }
     function backToHouses() { document.getElementById("housesOverview").style.display = "block"; document.getElementById("houseDetailContainer").style.display = "none"; }
 
+    function isPlayerProfileId(id) { return String(id || "").startsWith("pc_"); }
+    function publicProfileId(uid, characterId) { return `${uid}_${characterId}`; }
+    function publicProfileRef(uid, characterId) { return legaciesDb.collection("publicCharacters").doc(publicProfileId(uid, characterId)); }
+    function canEditPlayerProfile(profile) { return !!(state.user && (isAdminUid() || profile.ownerUid === state.user.uid)); }
+    async function loadPublicCharacterProfiles() {
+      if (!state.user) { state.playerProfiles = []; renderNpcs(); return; }
+      try {
+        const snap = await legaciesDb.collection("publicCharacters").get();
+        state.playerProfiles = snap.docs.map(d => ({ id:`pc_${d.id}`, publicId:d.id, ...d.data(), isPlayerCharacter:true }));
+        if (state.user && state.user.uid !== LEGACIES_ADMIN_UID) activeMessagesOwnerUid = state.user.uid;
+        renderNpcs();
+        renderMessagesDirectory(); renderMessagesConversation();
+        if (document.getElementById("adminNpcsList")) renderAdminLists();
+      } catch (e) { console.warn("Perfiles públicos:", e); }
+    }
+    function profileToDirectoryNpc(p) {
+      return { id:p.id, name:p.name || "Sin nombre", type:"Estudiante", role:p.role || "Estudiante", house:p.dormitory || p.house || "Sin dormitorio", photo:p.photo || "", description:p.description || "", sheet:p.sheet || "", isPlayerCharacter:true, ownerUid:p.ownerUid, publicId:p.publicId };
+    }
+    async function savePlayerProfileFromForm(id) {
+      const c = legaciesCharacters.find(x => x.id === id); if (!c || !state.user) return;
+      const payload = { name:document.getElementById("newCharacterName").value.trim(), dormitory:document.getElementById("newCharacterDorm").value, role:document.getElementById("newCharacterRole").value.trim(), photo:document.getElementById("newCharacterPhoto").value.trim(), description:document.getElementById("newCharacterDescription").value.trim(), sheet:document.getElementById("newCharacterSheet").value.trim(), ownerUid:state.user.uid, characterId:id, updatedAt:firebase.firestore.FieldValue.serverTimestamp() };
+      if (!payload.name) { showToast("El nombre del personaje es obligatorio."); return; }
+      try {
+        await legaciesDb.collection("users").doc(state.user.uid).collection("characters").doc(id).set({...payload, createdAt:c.createdAt || Date.now()}, {merge:true});
+        await publicProfileRef(state.user.uid,id).set(payload,{merge:true});
+        await loadLegaciesCharacters(); await loadPublicCharacterProfiles();
+        showToast("Perfil publicado y actualizado.");
+      } catch(e) { console.error(e); showToast("No se pudo guardar el perfil. Comprueba tu conexión y las reglas de Firestore."); }
+    }
+    async function openPlayerProfileEditor(id) {
+      const c = legaciesCharacters.find(x=>x.id===id); if (!c) return;
+      document.getElementById("newCharacterName").value=c.name||"";
+      document.getElementById("newCharacterDorm").value=c.dormitory||"";
+      document.getElementById("newCharacterRole").value=c.role||"";
+      document.getElementById("newCharacterPhoto").value=c.photo||"";
+      document.getElementById("newCharacterDescription").value=c.description||"";
+      document.getElementById("newCharacterSheet").value=c.sheet||"";
+      const btn=document.getElementById("createCharacterBtn"); btn.textContent="Guardar y publicar perfil"; btn.onclick=()=>savePlayerProfileFromForm(id);
+      document.getElementById("newCharacterForm").style.display="block";
+      document.getElementById("newCharacterForm").scrollIntoView({behavior:"smooth",block:"center"});
+    }
+    function resetPlayerProfileEditor() {
+      ["newCharacterName","newCharacterDorm","newCharacterRole","newCharacterPhoto","newCharacterDescription","newCharacterSheet"].forEach(id=>{const e=document.getElementById(id);if(e)e.value="";});
+      const b=document.getElementById("createCharacterBtn"); if(b){b.textContent="Crear personaje";b.onclick=createLegaciesCharacter;}
+    }
+    async function publishPlayerPost(profile) {
+      const text=document.getElementById("playerPostText")?.value.trim(); const image=document.getElementById("playerPostImg")?.value.trim()||"";
+      if(!text) { showToast("Escribe algo antes de publicar."); return; }
+      if(!canEditPlayerProfile(profile)) return;
+      try { await legaciesDb.collection("publicCharacters").doc(profile.publicId).collection("posts").add({text,image,authorUid:state.user.uid,authorNpcId:"",authorName:profile.name,timestamp:new Date().toLocaleString("es-PE"),createdAt:firebase.firestore.FieldValue.serverTimestamp()}); await renderPlayerProfilePosts(profile); showToast("Publicación compartida."); }
+      catch(e){console.error(e);showToast("No se pudo publicar.");}
+    }
+    async function publishNpcPostOnPlayer(profile) {
+      if(!isAdminUid()) return;
+      const text=document.getElementById("playerPostText")?.value.trim(); const image=document.getElementById("playerPostImg")?.value.trim()||""; const npcId=document.getElementById("playerPostNpcAuthor")?.value||"";
+      if(!text || !npcId){showToast("Selecciona el NPC y escribe el mensaje.");return;}
+      const npc=state.npcs.find(n=>n.id===npcId); if(!npc)return;
+      try { await legaciesDb.collection("publicCharacters").doc(profile.publicId).collection("posts").add({text,image,authorUid:state.user.uid,authorNpcId:npcId,authorName:npc.name,timestamp:new Date().toLocaleString("es-PE"),createdAt:firebase.firestore.FieldValue.serverTimestamp()}); await renderPlayerProfilePosts(profile); showToast("Mensaje publicado como NPC."); }
+      catch(e){console.error(e);showToast("No se pudo publicar el mensaje.");}
+    }
+    async function deletePlayerPost(profile, postId) { if(!isAdminUid() && !canEditPlayerProfile(profile))return; try{await legaciesDb.collection("publicCharacters").doc(profile.publicId).collection("posts").doc(postId).delete(); await renderPlayerProfilePosts(profile);}catch(e){console.error(e);showToast("No se pudo eliminar la publicación.");} }
+    async function renderPlayerProfilePosts(profile) {
+      const area=document.getElementById("profileContentArea"); if(!area)return;
+      try {
+        const snap=await legaciesDb.collection("publicCharacters").doc(profile.publicId).collection("posts").orderBy("createdAt","desc").get();
+        const posts=snap.docs.map(d=>({id:d.id,...d.data()}));
+        const owner=canEditPlayerProfile(profile); const admin=isAdminUid();
+        const npcOptions=state.npcs.map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join("");
+        const composer=owner||admin?`<div class="card" style="margin-bottom:1rem;box-shadow:none;"><h4>${owner?"Publicar en tu perfil":"Publicar en nombre de un NPC"}</h4>${admin?`<select id="playerPostNpcAuthor" class="form-control" style="margin:.6rem 0;"><option value="">Selecciona un NPC</option>${npcOptions}</select>`:""}<textarea id="playerPostText" class="form-control" rows="3" placeholder="Escribe una publicación..."></textarea><input id="playerPostImg" class="form-control" style="margin:.5rem 0;" placeholder="URL de imagen (opcional)"/><button class="btn-primary-arcane" style="margin-top:.5rem;" onclick="${admin?`publishNpcPostOnPlayer(state.playerProfiles.find(p=>p.publicId==='${profile.publicId}'))`:`publishPlayerPost(state.playerProfiles.find(p=>p.publicId==='${profile.publicId}'))`}">Publicar</button></div>`:"";
+        area.innerHTML=composer+(posts.length?posts.map(p=>`<div class="card" style="margin-bottom:.8rem;box-shadow:none;"><div class="post-meta"><strong>${escapeHtml(p.authorName||profile.name)}</strong><span class="meta-date">${escapeHtml(p.timestamp||"")}</span>${admin||p.authorUid===state.user?.uid?`<button class="btn-danger" onclick="deletePlayerPost(state.playerProfiles.find(x=>x.publicId==='${profile.publicId}'),'${p.id}')">Borrar</button>`:""}</div>${p.image?`<img class="post-image" src="${escapeHtml(safePhotoSrc(p.image))}" alt=""/>`:""}<p style="white-space:pre-wrap;">${escapeHtml(p.text||"")}</p></div>`).join(""):`<p style="text-align:center;color:var(--ink-muted);">Este perfil aún no tiene publicaciones.</p>`);
+      } catch(e){console.error(e);area.innerHTML="<p>No se pudieron cargar las publicaciones.</p>";}
+    }
+    function openPublicCharacterProfile(id) {
+      const profile=state.playerProfiles.find(p=>p.id===id); if(!profile)return;
+      state.activeProfileId=id; state.activeProfileTab="sheet";
+      document.getElementById("profileModal").classList.add("open");
+      document.querySelectorAll("#profileModal .filter-chip").forEach(b=>b.classList.remove("active"));
+      document.getElementById("profTabBtn-sheet").classList.add("active");
+      const house=state.houses.find(h=>String(h.name).toLowerCase()===String(profile.dormitory||profile.house||"").toLowerCase());
+      const photo=safePhotoSrc(profile.photo); const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(profile.name)}"/>`:escapeHtml((profile.name||"?").charAt(0).toUpperCase());
+      document.getElementById("profileHeaderArea").innerHTML=`<div class="profile-banner" style="background:linear-gradient(155deg,${house?.color||"#351B45"} 0%,#24102F 85%);"><div class="profile-avatar-lg">${avatar}</div><div style="flex:1;"><span class="badge badge-important">Estudiante</span><span class="badge" style="margin-left:.3rem;">${escapeHtml(profile.dormitory||profile.house||"Sin dormitorio")}</span><h2 style="color:#FBF5E9;">${escapeHtml(profile.name)}</h2><p class="font-meta" style="color:#C69A3C;">${escapeHtml(profile.role||"Estudiante")}</p></div>${state.user && profile.ownerUid===state.user.uid?`<button class="btn-outline-gold" onclick="openPlayerProfileEditorFromPublic('${profile.publicId}')">Editar perfil</button>`:""}</div>`;
+      document.getElementById("profTabBtn-affinity").style.display="none"; document.getElementById("profTabBtn-pm").style.display="none"; document.getElementById("profTabBtn-posts").style.display="inline-flex";
+      document.getElementById("profileContentArea").innerHTML=`<div class="card" style="box-shadow:none;"><h4>Presentación</h4><p>${escapeHtml(profile.description||"Sin presentación.")}</p><h4 style="margin-top:1rem;">Ficha del personaje</h4><p style="white-space:pre-line;">${escapeHtml(profile.sheet||"Ficha aún no redactada.")}</p></div>`;
+    }
+    async function openPlayerProfileEditorFromPublic(publicId) { const p=state.playerProfiles.find(x=>x.publicId===publicId); if(!p||!canEditPlayerProfile(p))return; await loadLegaciesCharacters(); closeProfileModal(); openCharactersModal(); setTimeout(()=>openPlayerProfileEditor(p.characterId),150); }
+
     function filterNpcs(f, btn) {
       state.npcFilter = f;
       document.querySelectorAll("#npcFilters .filter-chip").forEach(b => b.classList.remove("active"));
@@ -1087,9 +1487,14 @@
     }
     function renderNpcs() {
       const grid = document.getElementById("npcGrid");
-      let list = state.npcs;
-      if (state.npcFilter === "Profesor" || state.npcFilter === "Estudiante") list = list.filter(n => (n.type || "Profesor") === state.npcFilter);
-      else if (state.npcFilter !== "Todos") list = list.filter(n => normalizeHouseName(n.house) === normalizeHouseName(state.npcFilter));
+      let list = [...state.npcs, ...state.playerProfiles.map(profileToDirectoryNpc)];
+      if (state.npcFilter === "Profesor") {
+        list = list.filter(n => !n.isPlayerCharacter && (n.type || "Profesor") === "Profesor" && normalizeHouseName(n.house) !== "npc");
+      } else if (state.npcFilter === "NPC") {
+        list = list.filter(n => !n.isPlayerCharacter && ((n.type || "") === "NPC" || normalizeHouseName(n.house) === "npc"));
+      } else if (state.npcFilter !== "Todos") {
+        list = list.filter(n => !n.isPlayerCharacter && (n.type || "") !== "NPC" && normalizeHouseName(n.house) === normalizeHouseName(state.npcFilter));
+      }
       if (!list.length) { grid.innerHTML = `<div class="card" style="grid-column:1/-1; text-align:center;">No hay personajes en esta categoría.</div>`; return; }
 
       grid.innerHTML = list.map(n => {
@@ -1100,7 +1505,7 @@
         const role = n.role || (type === "Estudiante" ? "Estudiante" : "Personal de la academia");
         const description = n.description || "";
         const seal = ({Amaranthe:"白",Veritastra:"✧",Oathwyn:"♢",Aurelion:"♜",Dirección:"✦"})[house] || "✦";
-        return `<article class="npc-dorm-card clickable-card" data-house="${escapeHtml(house)}" onclick="openCharacterProfile('${escapeHtml(n.id)}')" aria-label="Abrir perfil de ${escapeHtml(n.name)}">
+        return `<article class="npc-dorm-card clickable-card" data-house="${escapeHtml(house)}" onclick="${n.isPlayerCharacter?`openPublicCharacterProfile(\'${escapeHtml(n.id)}\')`:`openCharacterProfile(\'${escapeHtml(n.id)}\')`}" aria-label="Abrir perfil de ${escapeHtml(n.name)}">
           <div class="npc-dorm-portrait" onclick="event.stopPropagation(); const img=this.querySelector('img'); if(img) openImageLightbox(img.src,img.alt)">${avatar}</div>
           <div class="npc-dorm-copy">
             <div class="npc-dorm-kicker">${escapeHtml(house)} · ${escapeHtml(type)}</div>
@@ -1117,6 +1522,7 @@
       state.activeProfileId = npcId; state.activeProfileTab = "sheet";
       document.getElementById("profileModal").classList.add("open");
       document.querySelectorAll("#profileModal .filter-chip").forEach(b => b.classList.remove("active"));
+      document.getElementById("profTabBtn-affinity").style.display="inline-flex"; document.getElementById("profTabBtn-pm").style.display="inline-flex"; document.getElementById("profTabBtn-posts").style.display="inline-flex";
       document.getElementById("profTabBtn-sheet").classList.add("active");
       renderProfileModal();
       await fetchPrivateMessagesForCurrentContext();
@@ -1127,6 +1533,7 @@
       state.activeProfileTab = tab;
       document.querySelectorAll("#profileModal .filter-chip").forEach(b => b.classList.remove("active"));
       if (btn) btn.classList.add("active");
+      if (isPlayerProfileId(state.activeProfileId)) { const p=state.playerProfiles.find(x=>x.id===state.activeProfileId); if(p && tab==="posts") renderPlayerProfilePosts(p); else if(p && tab==="sheet") openPublicCharacterProfile(p.id); return; }
       renderProfileModal();
       if (tab === "pm") fetchPrivateMessagesForCurrentContext().then(renderProfileModal);
     }
@@ -1348,54 +1755,31 @@
     function savePmPlayerName(name) { localStorage.setItem("legacies_pm_player", name.trim()); fetchPrivateMessagesForCurrentContext().then(renderProfileModal); }
     function selectPmPlayer(name) { state.activePmPlayerTarget = String(name || "").trim(); renderProfileModal(); }
     async function fetchPrivateMessagesForCurrentContext() {
-      if (!getScriptUrl()) return;
-      const isAdminUser = state.user && state.user.role === "admin";
-      const playerName = (state.user && state.user.name) || localStorage.getItem("legacies_pm_player") || "";
-      if (!isAdminUser && !playerName) return;
+      if (!getScriptUrl() || !state.user) return;
       try {
-        const res = await apiPost({ action: "getPrivateChat", playerName, password: isAdminUser ? state.adminPasswordCache : "" });
+        const token=await getCurrentFirebaseIdToken();
+        const res = await apiPost({ action:"getPrivateChat", idToken:token });
         if (res && res.ok && Array.isArray(res.messages)) state.privateMsgs = res.messages;
       } catch (e) { console.warn(e); }
     }
     async function sendPrivateMessage(senderType) {
       const npc = state.npcs.find(n => n.id === state.activeProfileId); if (!npc) return;
-      const msg = document.getElementById("pmInputBox").value.trim();
-      let playerName = "";
+      const input=document.getElementById("pmInputBox"), msg=input?input.value.trim():"";
+      const isAdmin=state.user && state.user.uid===LEGACIES_ADMIN_UID;
+      let playerName="", ownerUid="";
       if (senderType === "character") {
-        if (!(await ensureAdminPassword())) return;
-        const targetInput = document.getElementById("pmAdminTargetInput");
-        playerName = (targetInput ? targetInput.value : state.activePmPlayerTarget).trim();
-        state.activePmPlayerTarget = playerName;
-      } else {
-        const pInput = document.getElementById("pmPlayerNameInput");
-        playerName = (pInput ? pInput.value : "").trim();
-        if (playerName) localStorage.setItem("legacies_pm_player", playerName);
-      }
-      if (!playerName || !msg) { showToast("Indica el nombre del jugador y escribe el mensaje."); return; }
-      if (getScriptUrl()) {
-        const res = await apiPost({ action: "sendPrivateChat", npcId: npc.id, npcName: npc.name, playerName, senderType, message: msg, password: senderType === "character" ? state.adminPasswordCache : "" });
-        if (!res.ok) { showToast(res.error || "No se pudo enviar."); return; }
-        state.privateMsgs.push(res.msg);
-      } else {
-        state.privateMsgs.push({ id: "pm_" + Date.now(), timestamp: new Date().toLocaleString("es-PE"), npcId: npc.id, npcName: npc.name, playerName, senderType, message: msg });
-        persistLocalData();
-      }
+        if (!isAdmin || !(await ensureAdminPassword())) return;
+        const targetInput=document.getElementById("pmAdminTargetInput"); playerName=(targetInput?targetInput.value:state.activePmPlayerTarget).trim();
+        const matched=(state.playerProfiles||[]).find(p=>String(p.ownerName||p.playerName||p.displayName||"").toLowerCase()===playerName.toLowerCase()); ownerUid=matched&&matched.ownerUid;
+        state.activePmPlayerTarget=playerName;
+      } else { playerName=(state.user&&state.user.name)||"Estudiante"; ownerUid=state.user&&state.user.uid; }
+      if(!playerName||!ownerUid||!msg){showToast("Falta la cuenta destinataria o el mensaje.");return;}
+      if(getScriptUrl()) { const token=await getCurrentFirebaseIdToken(); const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:npc.id,npcName:npc.name,playerName,senderType,message:msg}); if(!res.ok){showToast(res.error||"No se pudo enviar.");return;} state.privateMsgs.push(res.msg); }
+      else { showToast("La mensajería privada requiere conexión con el servidor."); return; }
       renderProfileModal();
     }
 
-    async function loadAdminPrivateInbox() {
-      if (!(await ensureAdminPassword())) return;
-      if (getScriptUrl()) { const res = await apiPost({ action: "getPrivateChat", password: state.adminPasswordCache }); if (res && res.ok) state.privateMsgs = res.messages; }
-      const box = document.getElementById("adminPmInbox");
-      if (!state.privateMsgs.length) { box.innerHTML = `<p style="color:var(--ink-muted);">No hay mensajes privados todavía.</p>`; return; }
-      const groups = {};
-      state.privateMsgs.forEach(m => { const k = m.npcId + "::" + m.playerName; if (!groups[k]) groups[k] = { npcId: m.npcId, npcName: m.npcName, playerName: m.playerName, msgs: [] }; groups[k].msgs.push(m); });
-      box.innerHTML = Object.values(groups).map(g => {
-        const last = g.msgs[g.msgs.length - 1];
-        return `<div class="admin-item-row"><div><strong>${escapeHtml(g.playerName)}</strong> ↔ <span class="badge">${escapeHtml(g.npcName)}</span><div class="meta-date">${escapeHtml(last.message)} · (${escapeHtml(last.timestamp)})</div></div><button class="btn-primary-arcane" onclick="openPmFromInbox('${escapeHtml(g.npcId)}','${escapeHtml(g.playerName)}')">Responder como ${escapeHtml(g.npcName)}</button></div>`;
-      }).join("");
-    }
-    function openPmFromInbox(npcId, playerName) { state.activePmPlayerTarget = playerName; openCharacterProfile(npcId).then(() => switchProfileTab("pm", document.getElementById("profTabBtn-pm"))); }
+
 
     function renderChronicles() {
       document.getElementById("chroniclesList").innerHTML = state.chronicles.map(c => {
@@ -1468,7 +1852,15 @@
       applyChatBackground(); showToast("Se restauró el fondo original.");
     }
 
-    function switchChatChannel(ch, btn) { state.chatChannel = ch; document.querySelectorAll(".chat-channel-btn").forEach(b=>b.classList.remove("active")); if (btn) btn.classList.add("active"); renderChat(); }
+    async function switchChatChannel(ch, btn) {
+      state.chatChannel = ch;
+      document.querySelectorAll(".chat-channel-btn").forEach(b=>b.classList.remove("active"));
+      if (btn) btn.classList.add("active");
+      renderChat();
+    }
+    async function refreshChatWithAccess(notify = false) {
+      await refreshChat(notify);
+    }
     async function refreshChat(notify = false) {
       const url = getScriptUrl(); if (!url) { renderChat(); return; }
       try {
@@ -1477,12 +1869,10 @@
       } catch (e) { if (notify) showToast("Error al actualizar el chat."); }
     }
     function renderChat() {
-      const box = document.getElementById("chatMessages"), isAdm = state.user && state.user.role==="admin";
-      updateClassroomVisibility();
+      const box = document.getElementById("chatMessages");
+      if (!box) return;
+      const isAdm = state.user && state.user.role==="admin";
       applyChatBackground();
-      const roomId = state.chatChannel === "Aula 2" ? "aula2" : state.chatChannel === "Salón Principal" ? "aula1" : "";
-      const roomMembers = roomId ? (state.classroomMemberships[roomId] || []) : [];
-      if (roomId && !isAdm && !(state.user && roomMembers.includes(state.user.uid))) { box.innerHTML = '<p style="text-align:center;color:var(--ink-muted);margin-top:2rem;">No tienes acceso a esta aula. Consulta con Dirección para que te asignen.</p>'; return; }
       const list = state.chat.filter(m=>m.channel===state.chatChannel);
       if (!list.length) { box.innerHTML = `<p style="text-align:center; color:var(--ink-muted); margin-top:2rem;">Aún no hay mensajes en ${escapeHtml(state.chatChannel)}.</p>`; return; }
       box.innerHTML = list.map(m => {
@@ -1526,6 +1916,7 @@
       const house = hEl.value;
       const message = mEl.value.trim();
       if (!typedAuthor || !message) { showToast("Escribe el nombre de tu personaje y un mensaje."); return; }
+      if (message.length > 5000) { showToast("El mensaje es demasiado largo. El máximo es de 5,000 caracteres."); return; }
 
       const isDirection = !!(state.user && state.user.uid === LEGACIES_ADMIN_UID);
       const resolved = isDirection ? resolveChatNpc(typedAuthor) : { npc:null, ambiguous:false };
@@ -1613,6 +2004,7 @@
           docs.slice(i, i + 400).forEach(doc => batch.delete(doc.ref));
           await batch.commit();
         }
+        await publicProfileRef(state.user.uid,id).delete().catch(()=>{});
         await charRef.delete();
         if (activeCharacterId === id) {
           activeCharacterId = "";
@@ -1630,6 +2022,7 @@
       if (!state.user) return;
       const name = document.getElementById("newCharacterName").value.trim();
       const dormitory = document.getElementById("newCharacterDorm").value.trim();
+      const role = document.getElementById("newCharacterRole").value.trim(); const photo=document.getElementById("newCharacterPhoto").value.trim(); const description=document.getElementById("newCharacterDescription").value.trim(); const sheet=document.getElementById("newCharacterSheet").value.trim();
       if (!name) { showToast("Escribe el nombre del personaje."); return; }
       const btn = document.getElementById("createCharacterBtn"); btn.disabled = true;
       try {
@@ -1638,11 +2031,12 @@
           const [a,b] = await Promise.all([tx.get(ref.doc("character1")), tx.get(ref.doc("character2"))]);
           if (a.exists && b.exists) throw new Error("LIMIT_REACHED");
           const id = !a.exists ? "character1" : "character2";
-          tx.set(ref.doc(id), { name, dormitory, createdAt:Date.now(), ownerUid:state.user.uid });
+          tx.set(ref.doc(id), { name, dormitory, role, photo, description, sheet, createdAt:Date.now(), ownerUid:state.user.uid });
         });
         document.getElementById("newCharacterName").value = "";
         document.getElementById("newCharacterDorm").value = "";
-        await loadLegaciesCharacters(); showToast("Personaje creado correctamente.");
+        await publicProfileRef(state.user.uid, !legaciesCharacters.some(c=>c.id==="character1") ? "character1" : "character2").set({name,dormitory,role,photo,description,sheet,ownerUid:state.user.uid,characterId:!legaciesCharacters.some(c=>c.id==="character1")?"character1":"character2",createdAt:Date.now()},{merge:true});
+        resetPlayerProfileEditor(); await loadLegaciesCharacters(); await loadPublicCharacterProfiles(); showToast("Personaje creado y publicado correctamente.");
       } catch (e) {
         showToast(e.message === "LIMIT_REACHED" ? "Tu cuenta ya tiene sus 2 personajes." : "No se pudo crear el personaje. Revisa las reglas de Firestore.");
         console.error(e);
@@ -1654,8 +2048,82 @@
       renderLegaciesCharacters();
       if (document.getElementById("rollCharacter")) document.getElementById("rollCharacter").value = found.name;
       if (document.getElementById("chatAuthor")) document.getElementById("chatAuthor").value = found.name;
+      writeOnlinePresence();
       showToast(`Personaje activo: ${found.name}`);
     }
+
+    // Presencia en línea: cada cuenta renueva su marca temporal y el resto ve la lista en tiempo real.
+    const ONLINE_PRESENCE_TTL_MS = 90000;
+    let onlinePresenceUnsubscribe = null;
+    let onlinePresenceRows = [];
+    let onlinePresenceHeartbeat = null;
+
+    function getPresenceCharacter() {
+      const selected = (typeof legaciesCharacters !== "undefined" ? legaciesCharacters : []).find(c => c.id === activeCharacterId);
+      if (selected) return { name:selected.name || "Personaje sin nombre", photo:selected.photo || "" };
+      const first = (typeof legaciesCharacters !== "undefined" ? legaciesCharacters : [])[0];
+      return first ? { name:first.name || "Personaje sin nombre", photo:first.photo || "" } : { name:"Sin personaje seleccionado", photo:"" };
+    }
+    async function writeOnlinePresence() {
+      if (!state.user || !legaciesDb) return;
+      const character = getPresenceCharacter();
+      try {
+        await legaciesDb.collection("onlinePresence").doc(state.user.uid).set({
+          ownerUid:state.user.uid,
+          characterName:character.name,
+          characterPhoto:character.photo,
+          updatedAt:firebase.firestore.FieldValue.serverTimestamp()
+        }, { merge:true });
+      } catch (e) { console.warn("No se pudo actualizar la presencia en línea. Revisa las reglas de Firestore.",e); }
+    }
+    function startOnlinePresence() {
+      if (!state.user) return;
+      if (onlinePresenceUnsubscribe) onlinePresenceUnsubscribe();
+      writeOnlinePresence();
+      onlinePresenceUnsubscribe = legaciesDb.collection("onlinePresence").onSnapshot(snap => {
+        onlinePresenceRows = snap.docs.map(d => ({ uid:d.id, ...d.data() }));
+        renderOnlinePresence();
+      }, err => console.warn("No se pudo consultar quién está en línea. Revisa las reglas de Firestore.",err));
+      if (onlinePresenceHeartbeat) clearInterval(onlinePresenceHeartbeat);
+      onlinePresenceHeartbeat = setInterval(() => { writeOnlinePresence(); renderOnlinePresence(); }, 25000);
+    }
+    function stopOnlinePresence() {
+      if (onlinePresenceUnsubscribe) onlinePresenceUnsubscribe();
+      onlinePresenceUnsubscribe = null;
+      if (onlinePresenceHeartbeat) clearInterval(onlinePresenceHeartbeat);
+      onlinePresenceHeartbeat = null;
+      onlinePresenceRows = [];
+      renderOnlinePresence();
+    }
+    function getOnlinePresenceRows() {
+      const now = Date.now();
+      return onlinePresenceRows.filter(row => {
+        if (!row.updatedAt) return false;
+        const time = typeof row.updatedAt.toMillis === "function" ? row.updatedAt.toMillis() : (row.updatedAt.seconds ? row.updatedAt.seconds * 1000 : 0);
+        return time && now - time <= ONLINE_PRESENCE_TTL_MS;
+      }).sort((a,b) => String(a.characterName || "").localeCompare(String(b.characterName || ""),"es"));
+    }
+    function renderOnlinePresence() {
+      const btn = document.getElementById("onlineCountBtn");
+      const count = document.getElementById("onlineCountNumber");
+      const list = document.getElementById("onlinePresenceList");
+      const online = getOnlinePresenceRows();
+      if (btn) btn.style.display = state.user ? "inline-flex" : "none";
+      if (count) count.textContent = String(online.length);
+      if (list) {
+        list.innerHTML = online.length ? online.map(row => {
+          const photo = safePhotoSrc(row.characterPhoto || "");
+          const avatar = photo ? `<img class="online-presence-avatar" src="${escapeHtml(photo)}" alt="">` : `<div class="online-presence-avatar" style="display:grid;place-items:center;font-size:1.2rem;">✦</div>`;
+          return `<div class="online-presence-person">${avatar}<div style="min-width:0;"><strong>${escapeHtml(row.characterName || "Sin personaje seleccionado")}</strong><div style="font-size:.82rem;color:var(--ink-muted);"><span class="online-presence-dot"></span>En línea</div></div></div>`;
+        }).join("") : '<p style="color:var(--ink-muted);text-align:center;padding:1rem;">No hay personajes conectados en este momento.</p>';
+      }
+    }
+    function openOnlineModal() {
+      const modal = document.getElementById("onlinePresenceModal");
+      if (!modal) return;
+      renderOnlinePresence(); modal.style.display = "flex";
+    }
+    function closeOnlineModal() { const modal = document.getElementById("onlinePresenceModal"); if (modal) modal.style.display = "none"; }
 
     let authMode = "login";
     function updateAuthUI() {
@@ -1728,18 +2196,17 @@
       }
     }
     async function applyFirebaseUser(user) {
-      if (!user) { state.user = null; state.classroomMemberships = {}; updateAuthUI(); updateClassroomVisibility(); return; }
+      if (!user) { stopOnlinePresence(); state.user = null; state.playerProfiles=[]; updateAuthUI(); renderNpcs(); return; }
       const isAdmin = user.uid === LEGACIES_ADMIN_UID;
       state.user = { uid:user.uid, email:user.email, role:isAdmin ? "admin" : "player", name:user.displayName || user.email || "Estudiante" };
       try { await legaciesDb.collection("users").doc(user.uid).set({ email:user.email || "", displayName:user.displayName || user.email || "Estudiante", updatedAt:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true }); } catch(e) { console.warn("No se pudo actualizar el perfil de cuenta:",e); }
       updateAuthUI();
-      await loadMyClassroomMemberships();
-      if (user) loadLegaciesCharacters();
+      if (user) { await loadLegaciesCharacters(); await loadPublicCharacterProfiles(); startOnlinePresence(); }
       else { legaciesCharacters = []; activeCharacterId = ""; localStorage.removeItem("legacies_active_character"); }
     }
     async function logoutUser() {
       try { await legaciesAuth.signOut(); } catch (error) { showToast("No se pudo cerrar sesión."); return; }
-      state.user=null; legaciesCharacters=[]; state.adminPasswordCache=""; sessionStorage.removeItem("legacies_admin_pass");
+      stopOnlinePresence(); state.user=null; state.playerProfiles=[]; legaciesCharacters=[]; state.adminPasswordCache=""; sessionStorage.removeItem("legacies_admin_pass");
       updateAuthUI(); closeAuthModal(); renderChat();
       if (state.currentView==="admin") navigateTo("inicio");
     }
@@ -1770,83 +2237,6 @@
       if (btn) btn.classList.add("active");
       document.querySelectorAll(".admin-panel").forEach(p=>p.classList.remove("active"));
       document.getElementById("admin-tab-" + tab).classList.add("active");
-      if (tab === "pms") loadAdminPrivateInbox();
-      if (tab === "classrooms") loadClassroomMembers();
-    }
-
-    const CLASSROOM_CHANNELS = { aula1: "Salón Principal", aula2: "Aula 2" };
-
-    function currentClassroomId() {
-      return state.chatChannel === "Aula 2" ? "aula2" : state.chatChannel === "Salón Principal" ? "aula1" : "";
-    }
-    async function loadClassroomMembers() {
-      const box = document.getElementById("classroomMembersList");
-      if (!box) return;
-      if (!state.user || state.user.uid !== LEGACIES_ADMIN_UID) { box.innerHTML = "<p>Solo Dirección puede administrar las aulas.</p>"; return; }
-      box.innerHTML = '<p style="color:var(--ink-muted);">Cargando cuentas registradas…</p>';
-      try {
-        const snap = await legaciesDb.collection("users").get();
-        state.classroomUsers = snap.docs.map(d => ({ uid:d.id, email:d.data().email || "", name:d.data().displayName || d.data().email || "Estudiante" })).filter(u => u.uid !== LEGACIES_ADMIN_UID);
-        const roomId = document.getElementById("classroomAdminSelect").value;
-        const roomSnap = await legaciesDb.collection("classrooms").doc(roomId).get();
-        const roomData = roomSnap.exists ? roomSnap.data() : {};
-        const members = Array.isArray(roomData.memberUids) ? roomData.memberUids : [];
-        state.classroomMemberships[roomId] = members;
-        if (!state.classroomUsers.length) { box.innerHTML = '<p style="color:var(--ink-muted);">Todavía no hay cuentas de estudiantes registradas.</p>'; return; }
-        box.innerHTML = `<div style="border:1px solid rgba(198,154,60,.35);border-radius:8px;padding:.25rem .8rem;">${state.classroomUsers.map(u => `<label class="admin-item-row" style="justify-content:flex-start;cursor:pointer;"><input type="checkbox" class="classroom-member-check" value="${escapeHtml(u.uid)}" ${members.includes(u.uid)?"checked":""} style="width:18px;height:18px;"><span><strong>${escapeHtml(u.name)}</strong><span class="meta-date" style="display:block;">${escapeHtml(u.email)}</span></span></label>`).join("")}</div>`;
-      } catch (e) {
-        console.error("Error cargando usuarios de aulas:", e);
-        box.innerHTML = '<p style="color:#9b3d36;">No se pudieron cargar las cuentas. Revisa las reglas de Firestore.</p>';
-      }
-    }
-    async function saveClassroomMembers() {
-      if (!state.user || state.user.uid !== LEGACIES_ADMIN_UID) { showToast("Solo Dirección puede modificar las aulas."); return; }
-      const roomId = document.getElementById("classroomAdminSelect").value;
-      const memberUids = Array.from(document.querySelectorAll(".classroom-member-check:checked")).map(el => el.value);
-      try {
-        await legaciesDb.collection("classrooms").doc(roomId).set({
-          name: roomId === "aula1" ? "Aula 1" : "Aula 2",
-          channel:CLASSROOM_CHANNELS[roomId],
-          memberUids,
-          updatedAt:firebase.firestore.FieldValue.serverTimestamp(),
-          updatedBy:state.user.uid
-        }, { merge:true });
-        state.classroomMemberships[roomId] = memberUids;
-        showToast("Jugadores del aula guardados.");
-      } catch (e) {
-        console.error("Error guardando asignación:", e);
-        showToast("No se pudo guardar. Revisa las reglas de Firestore.");
-      }
-    }
-    async function loadMyClassroomMemberships() {
-      if (!state.user || state.user.uid === LEGACIES_ADMIN_UID) { state.classroomMemberships = { aula1:["*"], aula2:["*"] }; updateClassroomVisibility(); return; }
-      try {
-        const ids = ["aula1","aula2"];
-        const snaps = await Promise.all(ids.map(id => legaciesDb.collection("classrooms").doc(id).get()));
-        state.classroomMemberships = {};
-        snaps.forEach((snap,i) => {
-          const data = snap.exists ? snap.data() : {};
-          state.classroomMemberships[ids[i]] = Array.isArray(data.memberUids) ? data.memberUids : [];
-        });
-      } catch (e) { state.classroomMemberships = { aula1:[], aula2:[] }; console.warn("No se pudieron leer las asignaciones de aulas",e); }
-      updateClassroomVisibility();
-    }
-    function updateClassroomVisibility() {
-      const isAdmin = state.user && state.user.uid === LEGACIES_ADMIN_UID;
-      document.querySelectorAll(".chat-channel-btn").forEach(btn => {
-        const onclick = btn.getAttribute("onclick") || "";
-        const room = onclick.includes("Aula 2") ? "aula2" : onclick.includes("Salón Principal") ? "aula1" : "";
-        if (!room) { btn.style.display = ""; return; }
-        const members = state.classroomMemberships[room] || [];
-        btn.style.display = isAdmin || members.includes("*") || (state.user && members.includes(state.user.uid)) ? "" : "none";
-      });
-      const currentRoom = state.chatChannel === "Aula 2" ? "aula2" : state.chatChannel === "Salón Principal" ? "aula1" : "";
-      if (currentRoom && !isAdmin && !(state.classroomMemberships[currentRoom] || []).includes(state.user && state.user.uid)) {
-        state.chatChannel = "Rol Narrativo";
-        const fallback = Array.from(document.querySelectorAll(".chat-channel-btn")).find(b => (b.getAttribute("onclick")||"").includes("Rol Narrativo"));
-        document.querySelectorAll(".chat-channel-btn").forEach(b=>b.classList.remove("active")); if (fallback) fallback.classList.add("active");
-        renderChat();
-      }
     }
 
     function loadConfigIntoForm() {
@@ -1896,6 +2286,42 @@
       persistLocalData(); renderHouses(); showToast("Dormitorio actualizado.");
     }
 
+    async function editPublicCharacterProfile(publicId) {
+      if(!isAdminUid()) return; const p=state.playerProfiles.find(x=>x.publicId===publicId); if(!p)return;
+      const name=prompt("Nombre del personaje:",p.name||""); if(name===null)return;
+      const dormitory=prompt("Dormitorio:",p.dormitory||""); if(dormitory===null)return;
+      const role=prompt("Cargo / Año:",p.role||""); if(role===null)return;
+      const photo=prompt("URL de fotografía:",p.photo||""); if(photo===null)return;
+      const description=prompt("Presentación:",p.description||""); if(description===null)return;
+      const sheet=prompt("Ficha del personaje:",p.sheet||""); if(sheet===null)return;
+      try { await legaciesDb.collection("publicCharacters").doc(publicId).update({name:name.trim(),dormitory,role,photo,description,sheet,updatedAt:firebase.firestore.FieldValue.serverTimestamp()}); await loadPublicCharacterProfiles(); showToast("Perfil actualizado por Dirección."); } catch(e){console.error(e);showToast("No se pudo actualizar el perfil.");}
+    }
+    async function deletePublicCharacterProfile(publicId) {
+      if(!isAdminUid()) return;
+      if(!confirm("¿Eliminar este perfil público? El personaje privado de su propietario no se borrará.")) return;
+      try { const ref=legaciesDb.collection("publicCharacters").doc(publicId); const posts=await ref.collection("posts").get(); const batch=legaciesDb.batch(); posts.docs.forEach(d=>batch.delete(d.ref)); batch.delete(ref); await batch.commit(); await loadPublicCharacterProfiles(); showToast("Perfil público eliminado."); } catch(e){console.error(e);showToast("No se pudo eliminar el perfil.");}
+    }
+    function renderAdminCharacterDirectory(query="") {
+      const el=document.getElementById("adminNpcsList"); if(!el)return;
+      const q=String(query||"").trim().toLocaleLowerCase("es");
+      const items=[
+        ...state.npcs.map(n=>({...n,isPlayerCharacter:false})),
+        ...state.playerProfiles.map(profileToDirectoryNpc)
+      ];
+      const filtered=items.filter(n=>
+        [n.name,n.type,n.house,n.role].some(v=>
+          String(v||"").toLocaleLowerCase("es").includes(q)
+        )
+      );
+      el.className="admin-character-cards";
+      el.innerHTML=filtered.map(n=>{
+        const photo=safePhotoSrc(n.photo);
+        const actions=n.isPlayerCharacter
+          ? `<button class="btn-outline-gold" onclick="openPublicCharacterProfile('${escapeHtml(n.id)}')">Ver</button><button class="btn-outline-gold" onclick="editPublicCharacterProfile('${escapeHtml(n.publicId)}')">Editar</button><button class="btn-danger" onclick="deletePublicCharacterProfile('${escapeHtml(n.publicId)}')">Eliminar</button>`
+          : `<button class="btn-outline-gold" onclick="editNpc('${escapeHtml(n.id)}')">Editar</button><button class="btn-danger" onclick="deleteNpc('${escapeHtml(n.id)}')">Quitar</button>`;
+        return `<div class="card admin-character-card"><div class="admin-character-card-info">${photo?`<img src="${escapeHtml(photo)}" class="npc-thumb" alt="" />`:""}<div><strong>${escapeHtml(n.name)}</strong><div class="meta-date">${escapeHtml(n.type||"Estudiante")} · ${escapeHtml(n.house||"Sin dormitorio")} · ${escapeHtml(n.role||"")}</div></div></div><div class="admin-character-card-actions">${actions}</div></div>`;
+      }).join("")||'<p class="meta-date">No se encontraron personajes.</p>';
+    }
     function renderAdminLists() {
       document.getElementById("adminPostsList").innerHTML = state.posts.map(p => `<div class="admin-item-row"><div><strong>${escapeHtml(p.title)}</strong><div class="meta-date">${escapeHtml(p.category)} · ${escapeHtml(p.date)}</div></div><div style="display:flex; gap:0.4rem;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="editPost('${escapeHtml(p.id)}')">Editar</button><button class="btn-danger" onclick="deletePost('${escapeHtml(p.id)}')">Borrar</button></div></div>`).join("");
       document.getElementById("adminNpcsList").innerHTML = state.npcs.map(n => {
@@ -1903,6 +2329,7 @@
         return `<div class="admin-item-row"><div style="display:flex; align-items:center; gap:0.65rem;">${ph?`<img src="${escapeHtml(ph)}" class="npc-thumb" alt="" />`:''}<div><strong>${escapeHtml(n.name)}</strong><div class="meta-date">${escapeHtml(n.type||"Profesor")} · ${escapeHtml(n.role)} · ${escapeHtml(n.house)}</div></div></div><div style="display:flex; gap:0.4rem;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="editNpc('${escapeHtml(n.id)}')">Editar</button><button class="btn-danger" onclick="deleteNpc('${escapeHtml(n.id)}')">Quitar</button></div></div>`;
       }).join("");
       document.getElementById("adminChroniclesList").innerHTML = state.chronicles.map(c => `<div class="admin-item-row"><div><strong>${escapeHtml(c.title)}</strong><div class="meta-date">${escapeHtml(c.date)}</div></div><div style="display:flex; gap:0.4rem;"><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="editChron('${escapeHtml(c.id)}')">Editar</button><button class="btn-danger" onclick="deleteChronicle('${escapeHtml(c.id)}')">Borrar</button></div></div>`).join("");
+      renderAdminCharacterDirectory(document.getElementById("adminCharacterSearch")?.value||"");
     }
 
     async function savePostAdmin() {
@@ -1928,6 +2355,12 @@
       state.posts = state.posts.filter(p=>p.id!==id); persistLocalData(); renderPosts(); renderAdminLists(); showToast("Aviso eliminado.");
     }
 
+    function updateNpcTypeFields() {
+      const isNpc = document.getElementById("npcTypeInput").value === "NPC";
+      const house = document.getElementById("npcHouseInput");
+      if (isNpc) house.value = "";
+      house.disabled = isNpc;
+    }
     function updateNpcPreview() {
       const url = safePhotoSrc(document.getElementById("npcPhotoInput").value), el = document.getElementById("npcPreviewImg");
       if (url) { el.src = url; el.style.display = "block"; } else { el.style.display = "none"; }
@@ -1935,7 +2368,8 @@
     async function saveNpcAdmin() {
       if (!(await ensureAdminPassword())) return;
       const id = document.getElementById("editNpcId").value || ("n_"+Date.now());
-      const npc = { id, type:document.getElementById("npcTypeInput").value, name:document.getElementById("npcNameInput").value.trim(), role:document.getElementById("npcRoleInput").value.trim(), house:document.getElementById("npcHouseInput").value, photo:document.getElementById("npcPhotoInput").value.trim(), description:document.getElementById("npcDescInput").value.trim(), sheet:document.getElementById("npcSheetInput").value.trim() };
+      const npcType = document.getElementById("npcTypeInput").value;
+      const npc = { id, type:npcType, name:document.getElementById("npcNameInput").value.trim(), role:document.getElementById("npcRoleInput").value.trim(), house:npcType === "NPC" ? "" : document.getElementById("npcHouseInput").value, photo:document.getElementById("npcPhotoInput").value.trim(), description:document.getElementById("npcDescInput").value.trim(), sheet:document.getElementById("npcSheetInput").value.trim() };
       if (!npc.name || !npc.role) { showToast("Completa nombre y cargo."); return; }
       if (getScriptUrl()) { const res = await apiPost({ action:"saveNpc", password:state.adminPasswordCache, npc }); if (!res.ok) { showToast(res.error); return; } }
       const i = state.npcs.findIndex(n=>n.id===id); if (i>=0) state.npcs[i]=npc; else state.npcs.push(npc);
@@ -1945,11 +2379,11 @@
       const n = state.npcs.find(x=>x.id===id); if (!n) return;
       document.getElementById("npcFormTitle").textContent="Editar Personaje"; document.getElementById("editNpcId").value=n.id;
       document.getElementById("npcTypeInput").value=n.type||"Profesor"; document.getElementById("npcNameInput").value=n.name;
-      document.getElementById("npcRoleInput").value=n.role; document.getElementById("npcHouseInput").value=n.house;
+      document.getElementById("npcRoleInput").value=n.role; document.getElementById("npcHouseInput").value=n.house||""; document.getElementById("npcHouseInput").disabled=(n.type||"")==="NPC";
       document.getElementById("npcPhotoInput").value=n.photo||""; document.getElementById("npcDescInput").value=n.description||"";
       document.getElementById("npcSheetInput").value=n.sheet||""; updateNpcPreview();
     }
-    function resetNpcForm() { document.getElementById("npcFormTitle").textContent="Añadir Profesor / Estudiante"; ["editNpcId","npcNameInput","npcRoleInput","npcPhotoInput","npcDescInput","npcSheetInput"].forEach(id=>document.getElementById(id).value=""); updateNpcPreview(); }
+    function resetNpcForm() { document.getElementById("npcFormTitle").textContent="Añadir Personaje"; ["editNpcId","npcNameInput","npcRoleInput","npcPhotoInput","npcDescInput","npcSheetInput"].forEach(id=>document.getElementById(id).value=""); document.getElementById("npcTypeInput").value="Profesor"; document.getElementById("npcHouseInput").value="Dirección"; document.getElementById("npcHouseInput").disabled=false; updateNpcPreview(); }
     async function deleteNpc(id) {
       if (!(await ensureAdminPassword())) return;
       if (getScriptUrl()) { const res = await apiPost({ action:"deleteNpc", password:state.adminPasswordCache, id }); if (!res.ok) return; }
@@ -1985,7 +2419,7 @@
     }
     function clearScriptUrl() { state.scriptUrl=DEFAULT_SCRIPT_URL; localStorage.removeItem("legacies_script_url"); document.getElementById("scriptUrlInput").value=DEFAULT_SCRIPT_URL; syncFromServer(); showToast("Restaurado enlace principal."); }
 
-    function renderAll() { applyConfigUI(); renderPosts(); renderRollsHistory(); renderHouses(); renderNpcs(); renderChronicles(); renderChat(); updateAuthUI(); updateServerBadge(); }
+    function renderAll() { applyConfigUI(); renderPosts(); renderRollsHistory(); renderHouses(); renderNpcs(); renderChronicles(); renderChat(); renderMessagesDirectory(); renderMessagesConversation(); loadMessageGroups(); updateAuthUI(); updateServerBadge(); }
 
     (function init() {
       loadLocalDefaults();
@@ -1995,11 +2429,21 @@
       setInterval(() => {
         if (!getScriptUrl()) return;
         if (state.currentView === "dados") refreshRolls(false);
+        if (state.currentView === "mensajes" && state.user) { refreshChat(false).then(()=>refreshMessagesUnread()).then(()=>renderMessagesDirectory()).then(()=>renderMessagesConversation()); }
         if (state.currentView === "chat") refreshChat(false);
         if (state.activeProfileId && state.activeProfileTab === "pm") fetchPrivateMessagesForCurrentContext().then(renderProfileModal);
       }, 10000);
     })();
   </script>
+  <div id="onlinePresenceModal" class="modal-overlay" style="display:none;z-index:1200;" onclick="if(event.target===this)closeOnlineModal()">
+    <div class="modal-content" style="max-width:520px;width:calc(100% - 2rem);max-height:80vh;overflow:auto;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;">
+        <div><h2 style="margin:0;">Personajes en línea</h2><p style="margin:.25rem 0 0;color:var(--ink-muted);font-size:.9rem;">Cuentas conectadas en este momento</p></div>
+        <button class="btn-outline-gold" onclick="closeOnlineModal()" aria-label="Cerrar">✕</button>
+      </div>
+      <div id="onlinePresenceList" class="online-presence-list"><p style="color:var(--ink-muted);">Cargando conexiones…</p></div>
+    </div>
+  </div>
   <div class="image-lightbox" id="imageLightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" onclick="if(event.target===this) closeImageLightbox()">
     <button class="image-lightbox-close" type="button" aria-label="Cerrar imagen" onclick="closeImageLightbox()">&times;</button>
     <figure><img id="imageLightboxPhoto" alt="" /><figcaption id="imageLightboxCaption"></figcaption></figure>
@@ -2018,7 +2462,7 @@
       box.classList.remove('open'); document.body.style.overflow='';
       const photo=document.getElementById('imageLightboxPhoto'); if(photo) photo.removeAttribute('src');
     }
-    document.addEventListener('keydown', function(event) { if(event.key==='Escape') closeImageLightbox(); });
+    document.addEventListener('keydown', function(event) { if(event.key==='Escape') { closeImageLightbox(); closeOnlineModal(); } });
   </script>
 </body>
 </html>
