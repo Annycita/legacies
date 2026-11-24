@@ -1,17 +1,6 @@
-<!DOCTYPE html>
-<!-- LEGACIES v37: Jugadoras muestra únicamente tarjetas individuales de personajes publicados, sin herramientas administrativas. Basado en v36. -->
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>LEGACIES — Academia Rosewood</title>
-  <script>
+<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>LEGACIES — Academia Rosewood</title><script>
     window.LEGACIES_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwV_G0zhiwmKFhE4w0B__7dvKDJGxll9kpR6H39fjPEGMXHjJNjiAVnyUdbs2AZmsY/exec";
-  </script>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" />
-  <style>
+  </script><link rel="preconnect" href="https://fonts.googleapis.com" /><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin /><link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;600;700;800&family=Crimson+Pro:ital,wght@0,400;0,500;0,600;1,400&family=Montserrat:wght@400;500;600&display=swap" rel="stylesheet" /><style>
     :root {
       --bg-dark: #24102F; --bg-secondary: #351B45; --bg-cream: #F5ECD9; --bg-warm: #FBF5E9;
       --gold: #C69A3C; --gold-dark: #8F6A1D; --gold-soft: rgba(198,154,60,0.28);
@@ -397,391 +386,7 @@
     .messages-npc-name{font-size:.68rem;font-weight:700;line-height:1.15;text-align:center;max-width:70px;overflow-wrap:anywhere}
     .messages-npc-tab .messages-unread-dot{position:absolute;right:8px;top:7px}
     @media(max-width:600px){.messages-npc-tab{flex-basis:70px;min-height:96px}.messages-npc-photo{width:48px;height:48px}}
-</style>
-</head>
-<body>
-  <header class="navbar">
-    <div class="nav-container" id="navContainer">
-      <div class="brand" onclick="navigateTo('inicio')">
-        <span id="navCrestWrap" style="display:inline-flex;">
-          <svg width="34" height="34" viewBox="0 0 64 64" fill="none"><path d="M32 4L56 14V31C56 46.5 45.5 56.5 32 60C18.5 56.5 8 46.5 8 31V14L32 4Z" fill="#351B45" stroke="#C69A3C" stroke-width="3"/><path d="M32 15L36.2 26.8L48 31L36.2 35.2L32 47L27.8 35.2L16 31L27.8 26.8L32 15Z" fill="#C69A3C"/></svg>
-        </span>
-        <span class="brand-title">LEGACIES</span>
-      </div>
-      <button class="mobile-toggle" onclick="toggleMobileMenu()">Menú</button>
-      <ul class="nav-links">
-        <li><button class="nav-btn" data-view="tablon" onclick="navigateTo('tablon')">Tablón</button></li>
-        <li><button class="nav-btn" data-view="dados" onclick="navigateTo('dados')">Dados</button></li>
-        <li><button class="nav-btn" data-view="dormitorios" onclick="navigateTo('dormitorios')">Dormitorios</button></li>
-        <li><button class="nav-btn" data-view="npc" onclick="navigateTo('npc')">NPC</button></li>
-        <li><button class="nav-btn" data-view="cronicas" onclick="navigateTo('cronicas')">Crónicas</button></li>
-        <li><button class="nav-btn" data-view="jugadoras" onclick="navigateTo('jugadoras')">Jugadoras</button></li>
-        <li><button class="nav-btn" data-view="mensajes" onclick="navigateTo('mensajes')">Mensajes</button></li>
-      </ul>
-      <div class="nav-actions">
-        <button class="btn-outline-gold" id="onlineCountBtn" onclick="openOnlineModal()" style="display:none;" aria-label="Ver personajes conectados">🟢 <span id="onlineCountNumber">0</span> en línea</button>
-        <button class="btn-outline-gold" id="authBtn" onclick="openAuthModal()">Iniciar sesión</button>
-        <button class="btn-outline-gold" id="charactersBtn" onclick="openCharactersModal()" style="display:none;">Mis personajes</button>
-        <button class="btn-outline-gold nav-admin-icon" onclick="openAdminSection()" title="Administración" aria-label="Administración">⚙</button>
-      </div>
-    </div>
-  </header>
-
-  <main>
-    <section id="view-inicio" class="view-section active arcane-bg">
-      <div class="hero" id="heroContainer">
-        <div class="hero-frame">
-          <div class="hero-crest" id="heroCrestWrap">
-            <svg width="76" height="76" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#C69A3C" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M32 7L52 16V31C52 44.5 43.2 53.3 32 56.5C20.8 53.3 12 44.5 12 31V16L32 7Z" fill="#351B45" stroke="#C69A3C" stroke-width="2.5"/><path d="M32 17L35.5 27.5L46 31L35.5 34.5L32 45L28.5 34.5L18 31L28.5 27.5L32 17Z" fill="#C69A3C"/></svg>
-          </div>
-          <h1 class="hero-title" id="heroTitleDisplay">LEGACIES</h1>
-          <p class="hero-academy" id="heroAcademyDisplay">Academia Rosewood</p>
-          <div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div>
-          <p class="hero-motto" id="heroMottoDisplay">«Toda historia deja un eco. Tú decides cuál será el tuyo.»</p>
-          <div class="hero-actions">
-            <button class="btn-gold" onclick="navigateTo('tablon')">Ir al Tablón</button>
-            <button class="btn-primary-arcane" onclick="navigateTo('dados')">Oráculo de Dados</button>
-            <button class="btn-primary-arcane" onclick="navigateTo('dormitorios')">Explorar Dormitorios</button>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-tablon" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Tablón Informativo</h2><p id="boardDescDisplay">Comunicados oficiales de la Dirección de Rosewood, misiones vigentes, torneos y convocatorias.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="filter-bar" id="boardFilters">
-          <button class="filter-chip active" onclick="filterPosts('Todas', this)">Todas</button>
-          <button class="filter-chip" onclick="filterPosts('Importante', this)">Importante</button>
-          <button class="filter-chip" onclick="filterPosts('Eventos', this)">Eventos</button>
-          <button class="filter-chip" onclick="filterPosts('Misiones', this)">Misiones</button>
-          <button class="filter-chip" onclick="filterPosts('Actividades', this)">Actividades</button>
-          <button class="filter-chip" onclick="filterPosts('Avisos generales', this)">Avisos generales</button>
-        </div>
-        <div class="board-grid" id="boardGrid"></div>
-      </div>
-    </section>
-
-    <section id="view-dados" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Oráculo de Dados</h2><p id="oracleDescDisplay">Canaliza el destino de tu personaje. Las tiradas quedan selladas en el archivo público de Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div style="text-align:center;"><span id="serverStatusPill" class="server-pill connected">Conectado al Servidor Seguro (Google Sheets)</span></div>
-        <div class="oracle-layout">
-          <div class="card">
-            <h3 style="margin-bottom:1rem;">Invocar Tirada</h3>
-            <div class="form-group"><label for="rollCharacter">Nombre del personaje *</label><input id="rollCharacter" class="form-control" type="text" placeholder="Escribe el nombre de tu personaje" maxlength="60" oninput="this.classList.remove('input-error')" /></div>
-            <div class="form-group"><label for="rollAction">Acción, habilidad o hechizo (opcional)</label><input id="rollAction" class="form-control" type="text" placeholder="Ej. Canalizar luz astral / Persuasión" maxlength="90" /></div>
-            <div class="dice-buttons">
-              <button class="dice-btn" onclick="executeRoll('1d10')">1d10<span>Destino Simple</span></button>
-              <button class="dice-btn" onclick="executeRoll('3d10')">3d10<span>Tríada Arcana</span></button>
-              <button class="dice-btn" onclick="executeRoll('1d100')">1d100<span>Porcentual</span></button>
-            </div>
-          </div>
-          <div class="dice-result-box" id="diceResultBox">
-            <span class="font-meta" style="font-size:0.78rem; letter-spacing:0.12em; color:#C69A3C; text-transform:uppercase;">Altar del Oráculo</span>
-            <p style="color:#E8D9B8; margin-top:0.6rem;">Introduce el nombre de tu personaje a la izquierda y pulsa uno de los tres dados.</p>
-          </div>
-        </div>
-        <div style="margin-top:2.5rem;">
-          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.8rem;">
-            <h3>Historial Público de Tiradas</h3>
-            <div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;">
-              <button class="btn-primary-arcane" onclick="refreshRolls(true)">↻ Actualizar historial</button>
-              <label class="dice-preserve-toggle" title="Si está activado, la nueva partida conservará las tiradas anteriores.">
-                <input type="checkbox" id="preserveDiceHistory" />
-                <span class="dice-toggle-track"><span></span></span>
-                <span>Conservar historial (no borrar al iniciar)</span>
-              </label>
-              <button id="newDiceGameBtn" class="btn-danger" onclick="startNewDiceGame()" style="display:inline-flex;">Nueva partida · Vaciar historial</button>
-            </div>
-          </div>
-          <div class="history-table-wrap"><table><thead><tr><th>Personaje</th><th>Dado</th><th>Resultado</th><th>Acción / Hechizo</th><th>Fecha y hora</th></tr></thead><tbody id="rollsHistoryBody"></tbody></table></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-dormitorios" class="view-section paper-texture">
-      <div id="housesOverview" class="container">
-        <div class="section-header"><h2>Los Cuatro Dormitorios</h2><p id="housesDescDisplay">Cada residencia de Rosewood custodia un animal emblema, instalaciones propias y uniformes tradicionales. Solo sus integrantes pueden acceder a su interior.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="houses-grid" id="housesGrid"></div>
-      </div>
-      <div id="houseDetailContainer" style="display:none;"></div>
-    </section>
-
-    <section id="view-npc" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Personajes</h2><p id="npcDescDisplay">Explora los perfiles de Rosewood y conoce también a los personajes que existen fuera de la academia.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="filter-bar" id="npcFilters">
-          <button class="filter-chip active" onclick="filterNpcs('Profesor', this)">Profesores</button>
-          <button class="filter-chip" onclick="filterNpcs('Amaranthe', this)">Amaranthe</button>
-          <button class="filter-chip" onclick="filterNpcs('Veritastra', this)">Veritastra</button>
-          <button class="filter-chip" onclick="filterNpcs('Oathwyn', this)">Oathwyn</button>
-          <button class="filter-chip" onclick="filterNpcs('Aurelion', this)">Aurelion</button>
-          <button class="filter-chip" onclick="filterNpcs('NPC', this)">NPC</button>
-        </div>
-        <div class="npc-grid" id="npcGrid"></div>
-      </div>
-    </section>
-
-    <section id="view-cronicas" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Crónicas de la Academia</h2><p id="chroniclesDescDisplay">Registro vivo de los acontecimientos históricos y capítulos memorables de Academia Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="chronicle-list" id="chroniclesList"></div>
-      </div>
-    </section>
-
-    <section id="view-jugadoras" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Personajes de las Jugadoras</h2><p>Descubre los personajes que forman parte de la comunidad de Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="card" style="margin-bottom:1rem;">
-          <div class="messages-directory-heading"><div><span class="font-meta">COMUNIDAD DE ROSEWOOD</span><h3>Personajes publicados</h3></div><span class="badge" id="playersPageCount">0 personajes</span></div>
-          <div id="playersDirectoryGrid" class="players-directory-grid"><p class="messages-empty-strip">Inicia sesión para consultar los personajes publicados.</p></div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-mensajes" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header">
-          <h2>Mensajería de Rosewood</h2>
-          <p>Un espacio para mantener cada conversación en su lugar.</p>
-          <div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div>
-        </div>
-        <div class="messages-directory card">
-          <div class="messages-directory-heading">
-            <div><span class="font-meta">CORRESPONDENCIA</span><h3>Personajes</h3></div>
-            <span class="badge" id="messagesPlayerCount">0 personajes</span>
-          </div>
-          <div id="messagesPlayerStrip" class="messages-player-strip">
-            <p class="messages-empty-strip">Inicia sesión para ver los personajes y sus conversaciones.</p>
-          </div>
-        </div>
-        <div class="messages-directory card" style="margin-top:1rem;">
-          <div class="messages-directory-heading"><div><span class="font-meta">CONVERSACIONES COMPARTIDAS</span><h3>Grupos</h3></div><button class="btn-primary-arcane" type="button" onclick="openCreateMessageGroup()">＋ Crear grupo</button></div>
-          <div id="messagesGroupsList" class="messages-player-strip"><p class="messages-empty-strip">Inicia sesión para consultar tus grupos.</p></div>
-          <div id="messagesGroupComposer" style="display:none;padding:.8rem 0;">
-            <input id="messagesGroupName" class="form-control" maxlength="70" placeholder="Nombre del grupo">
-            <p class="font-meta" style="margin:.7rem 0 .35rem;">INVITAR JUGADORAS</p><div id="messagesGroupPlayers" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div>
-            <p class="font-meta" style="margin:.7rem 0 .35rem;">AÑADIR PERSONAJES NPC (SOLO DIRECCIÓN)</p><div id="messagesGroupNpcs" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div>
-            <div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn-primary-arcane" type="button" onclick="createMessageGroup()">Crear</button><button class="btn-secondary" type="button" onclick="closeCreateMessageGroup()">Cancelar</button></div>
-          </div>
-          <div id="messagesGroupConversation" style="display:none;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);"></div>
-        </div>
-        <div class="messages-workspace card" id="messagesWorkspace">
-          <div class="messages-empty-state" id="messagesEmptyState">
-            <div class="messages-empty-crest">✉</div>
-            <h3>Elige una jugadora</h3>
-            <p>Selecciona uno de los retratos de arriba para abrir aquí sus conversaciones.</p>
-          </div>
-          <div id="messagesConversationView" style="display:none;">
-            <div class="messages-conversation-header">
-              <div class="messages-selected-identity" id="messagesSelectedIdentity"></div>
-              <div class="messages-kind-tabs" role="tablist" aria-label="Tipo de conversación">
-                <span class="filter-chip active">Privados <span id="messagesPrivadosBadge"></span></span>
-              </div>
-            </div>
-            <div id="messagesNpcStrip" class="messages-npc-strip" aria-label="Conversaciones con personajes"></div>
-            <div id="messagesConversationContent" class="messages-conversation-content"></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section id="view-admin" class="view-section paper-texture">
-      <div class="container">
-        <div class="section-header"><h2>Panel de Administración</h2><p>Edita textos, fotografías, dormitorios, uniformes, personajes, avisos y crónicas.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div>
-        <div class="card">
-          <div class="admin-tabs">
-            <button class="filter-chip active" onclick="switchAdminTab('config', this)">Portada y Textos</button>
-            <button class="filter-chip" onclick="switchAdminTab('posts', this)">Tablón</button>
-            <button class="filter-chip" onclick="switchAdminTab('houses', this)">Dormitorios / Uniformes</button>
-            <button class="filter-chip" onclick="switchAdminTab('npcs', this)">Profesores / Estudiantes</button>
-            <button class="filter-chip" onclick="switchAdminTab('chronicles', this)">Crónicas</button>
-            <button class="filter-chip" onclick="switchAdminTab('server', this)">Google Sheets</button>
-          </div>
-
-          <div id="admin-tab-config" class="admin-panel active">
-            <div class="admin-grid">
-              <div>
-                <h3 style="margin-bottom:0.8rem;">Identidad y Portada</h3>
-                <div class="form-group"><label>Título Principal</label><input id="cfgTitle" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Nombre de la Academia</label><input id="cfgAcademy" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Frase / Lema</label><input id="cfgMotto" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Imagen de fondo de portada</label><div class="upload-row"><input id="cfgHeroBg" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'cfgHeroBg',900)" /></label></div></div>
-                <div class="form-group"><label>Imagen del escudo / logo</label><div class="upload-row"><input id="cfgCrest" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'cfgCrest',320)" /></label></div></div>
-              </div>
-              <div>
-                <h3 style="margin-bottom:0.8rem;">Descripciones de Secciones</h3>
-                <div class="form-group"><label>Tablón Informativo</label><input id="cfgBoardDesc" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Oráculo de Dados</label><input id="cfgOracleDesc" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Dormitorios</label><input id="cfgHousesDesc" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Profesores y Estudiantes</label><input id="cfgNpcDesc" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Crónicas</label><input id="cfgChronDesc" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Chat</label><input id="cfgChatDesc" class="form-control" type="text" /></div>
-                <button class="btn-primary-arcane" onclick="saveConfigAdmin()">Guardar Textos y Portada</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="admin-tab-posts" class="admin-panel">
-            <div class="admin-grid">
-              <div>
-                <h3 style="margin-bottom:1rem;" id="postFormTitle">Nueva Publicación</h3>
-                <input type="hidden" id="editPostId" />
-                <div class="form-group"><label>Título *</label><input id="postTitleInput" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Categoría</label><select id="postCategoryInput" class="form-control"><option value="Importante">Importante</option><option value="Eventos">Eventos</option><option value="Misiones">Misiones</option><option value="Actividades">Actividades</option><option value="Avisos generales">Avisos generales</option></select></div>
-                <div class="form-group"><label>Autor o responsable</label><input id="postAuthorInput" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Imagen del aviso</label><div class="upload-row"><input id="postImageInput" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'postImageInput',650)" /></label></div></div>
-                <div class="form-group"><label>Descripción *</label><textarea id="postDescInput" class="form-control" rows="4"></textarea></div>
-                <div class="form-group" style="display:flex; align-items:center; gap:0.5rem;"><input id="postImportantInput" type="checkbox" /><label for="postImportantInput" style="margin:0;">Destacar como importante</label></div>
-                <div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="savePostAdmin()">Guardar</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetPostForm()">Limpiar</button></div>
-              </div>
-              <div><h3 style="margin-bottom:1rem;">Avisos Publicados</h3><div id="adminPostsList"></div></div>
-            </div>
-          </div>
-
-          <div id="admin-tab-houses" class="admin-panel">
-            <div class="form-group" style="max-width:360px;">
-              <label>Selecciona el Dormitorio a editar</label>
-              <select id="adminHouseSelect" class="form-control" onchange="loadHouseIntoForm(this.value)">
-                <option value="amaranthe">Amaranthe</option><option value="veritastra">Veritastra</option>
-                <option value="oathwyn">Oathwyn</option><option value="aurelion">Aurelion</option>
-              </select>
-            </div>
-            <div class="admin-grid">
-              <div>
-                <div class="form-group"><label>Nombre</label><input id="hName" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Color representativo (Hex)</label><input id="hColor" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Animal emblema</label><input id="hAnimal" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Lema</label><input id="hMotto" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Descripción breve</label><textarea id="hShort" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Presentación completa</label><textarea id="hFull" class="form-control" rows="3"></textarea></div>
-                <div class="form-group"><label>Filosofía</label><textarea id="hPhil" class="form-control" rows="2"></textarea></div>
-              </div>
-              <div>
-                <div class="form-group"><label>Tradiciones</label><textarea id="hTrad" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Sala Común</label><textarea id="hRoom" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Imagen principal del Dormitorio</label><div class="upload-row"><input id="hImgMain" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgMain',650)" /></label></div></div>
-                <div class="form-group"><label>Instalaciones (descripción)</label><textarea id="hFac" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Foto de Instalaciones</label><div class="upload-row"><input id="hImgFac" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgFac',600)" /></label></div></div>
-                <div class="form-group"><label>Uniformes (descripción)</label><textarea id="hUni" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Foto de Uniformes</label><div class="upload-row"><input id="hImgUni" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgUni',600)" /></label></div></div>
-                <button class="btn-primary-arcane" onclick="saveHouseAdmin()">Guardar Dormitorio</button>
-              </div>
-            </div>
-          </div>
-
-          <div id="admin-tab-npcs" class="admin-panel">
-            <div class="admin-character-form">
-              <div>
-                <h3 style="margin-bottom:1rem;" id="npcFormTitle">Añadir Personaje</h3>
-                <input type="hidden" id="editNpcId" />
-                <div class="form-group"><label>Tipo</label><select id="npcTypeInput" class="form-control" onchange="updateNpcTypeFields()"><option value="Profesor">Profesor</option><option value="Estudiante">Estudiante</option><option value="NPC">NPC (sin dormitorio)</option></select></div>
-                <div class="form-group"><label>Nombre *</label><input id="npcNameInput" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Cargo / Año o Especialidad *</label><input id="npcRoleInput" class="form-control" type="text" placeholder="Ej. Maestra de Astrología / 3er Año" /></div>
-                <div class="form-group"><label>Dormitorio / Afiliación</label><select id="npcHouseInput" class="form-control"><option value="">No aplica / Sin dormitorio</option><option value="Dirección">Dirección</option><option value="Amaranthe">Amaranthe</option><option value="Veritastra">Veritastra</option><option value="Oathwyn">Oathwyn</option><option value="Aurelion">Aurelion</option><option value="NPC">NPC (fuera de Rosewood)</option></select></div>
-                <div class="form-group"><label>Fotografía</label><div class="upload-row"><input id="npcPhotoInput" class="form-control" type="text" placeholder="URL o sube imagen" oninput="updateNpcPreview()" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'npcPhotoInput',280,updateNpcPreview)" /></label><img id="npcPreviewImg" class="img-preview-mini" alt="" /></div></div>
-                <div class="form-group"><label>Descripción breve</label><textarea id="npcDescInput" class="form-control" rows="2"></textarea></div>
-                <div class="form-group"><label>Ficha del personaje (linaje, magia, historia, rasgos)</label><textarea id="npcSheetInput" class="form-control" rows="4" placeholder="Detalles de su ficha completa..."></textarea></div>
-                <div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="saveNpcAdmin()">Guardar Personaje</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetNpcForm()">Limpiar</button></div>
-              </div>
-            </div>
-
-            <section class="admin-character-directory">
-              <h3 style="margin:1.5rem 0 .75rem;">Personajes registrados</h3>
-              <input id="adminCharacterSearch" class="form-control" type="search" placeholder="Buscar por nombre, tipo o dormitorio..." oninput="renderAdminCharacterDirectory(this.value)" aria-label="Buscar personajes por nombre, tipo o dormitorio" />
-              <div id="adminNpcsList" class="admin-character-cards"></div>
-            </section>
-          </div>
-
-          <div id="admin-tab-chronicles" class="admin-panel">
-            <div class="admin-grid">
-              <div>
-                <h3 style="margin-bottom:1rem;" id="chronFormTitle">Nueva Crónica</h3>
-                <input type="hidden" id="editChronId" />
-                <div class="form-group"><label>Título *</label><input id="chronTitleInput" class="form-control" type="text" /></div>
-                <div class="form-group"><label>Fecha o ciclo</label><input id="chronDateInput" class="form-control" type="text" placeholder="Ej. Otoño — Año 412" /></div>
-                <div class="form-group"><label>Ilustración (opcional)</label><div class="upload-row"><input id="chronImgInput" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'chronImgInput',650)" /></label></div></div>
-                <div class="form-group"><label>Relato *</label><textarea id="chronBodyInput" class="form-control" rows="4"></textarea></div>
-                <div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="saveChronicleAdmin()">Guardar Crónica</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetChronForm()">Limpiar</button></div>
-              </div>
-              <div><h3 style="margin-bottom:1rem;">Crónicas Publicadas</h3><div id="adminChroniclesList"></div></div>
-            </div>
-          </div>
-
-
-          <div id="admin-tab-server" class="admin-panel">
-            <h3 style="margin-bottom:0.6rem;">Conexión con Google Apps Script & Google Sheets</h3>
-            <p style="margin-bottom:1rem; color:var(--ink-muted);">Tu URL conectada actualmente:</p>
-            <div class="form-group" style="max-width:680px;"><label>URL del Web App</label><input id="scriptUrlInput" class="form-control" type="url" /></div>
-            <div style="display:flex; gap:0.7rem; flex-wrap:wrap;"><button class="btn-primary-arcane" onclick="saveScriptUrl()">Guardar y Conectar</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="clearScriptUrl()">Usar enlace por defecto</button></div>
-          </div>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer><span class="font-cinzel" style="color:var(--gold); letter-spacing:0.12em;">LEGACIES</span> · Academia Rosewood · «Toda historia deja un eco. Tú decides cuál será el tuyo.»</footer>
-
-  <div class="modal-backdrop" id="authModal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeAuthModal()">&times;</button>
-      <h3 style="margin-bottom:0.4rem;">Acceso al Portal</h3>
-      <p style="color:var(--ink-muted); margin-bottom:1.2rem;">Entra a Rosewood con tu correo o crea tu cuenta.</p>
-      <div class="form-group"><label>Correo electrónico</label><input id="loginEmail" class="form-control" type="email" autocomplete="email" placeholder="tu@correo.com" /></div>
-      <div class="form-group"><label>Contraseña</label><input id="loginPassword" class="form-control" type="password" autocomplete="current-password" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter') submitLogin();" /></div>
-      <div class="form-group" id="registerNameGroup" style="display:none;"><label>Nombre para mostrar</label><input id="registerName" class="form-control" type="text" autocomplete="name" placeholder="Tu nombre o personaje" /></div>
-      <p id="authModeHint" style="font-size:0.9rem;color:var(--ink-muted);">¿Primera vez en Rosewood? Crea una cuenta.</p>
-      <div style="display:flex; gap:0.7rem; justify-content:flex-end; flex-wrap:wrap; margin-top:1.2rem;">
-        <button class="btn-outline-gold" style="color:var(--ink-dark);" id="logoutBtn" onclick="logoutUser()">Cerrar sesión</button>
-        <button class="btn-outline-gold" style="color:var(--ink-dark);" id="authModeBtn" onclick="toggleAuthMode()">Crear cuenta</button>
-        <button class="btn-primary-arcane" id="authSubmitBtn" onclick="submitLogin()">Entrar</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="charactersModal">
-    <div class="modal-box">
-      <button class="modal-close" onclick="closeCharactersModal()">&times;</button>
-      <h3 style="margin-bottom:0.4rem;">Mis personajes</h3>
-      <p style="color:var(--ink-muted); margin-bottom:1rem;">Cada cuenta puede tener hasta dos personajes. Sus fichas se guardan por separado.</p>
-      <div id="charactersList" style="display:grid;gap:0.7rem;"></div>
-      <div id="newCharacterForm" style="margin-top:1.2rem;">
-        <div class="form-group"><label>Nombre del personaje</label><input id="newCharacterName" class="form-control" maxlength="60" placeholder="Nombre de tu personaje" /></div>
-        <div class="form-group"><label>Dormitorio (opcional)</label><select id="newCharacterDorm" class="form-control"><option value="">Por asignar</option><option>Amaranthe</option><option>Veritastra</option><option>Oathwyn</option><option>Aurelion</option></select></div>
-        <div class="form-group"><label>Cargo / Año</label><input id="newCharacterRole" class="form-control" maxlength="100" placeholder="Ej. Estudiante de segundo año" /></div>
-        <div class="form-group"><label>Fotografía (URL)</label><input id="newCharacterPhoto" class="form-control" placeholder="https://..." /></div>
-        <div class="form-group"><label>Color de tu tarjeta de jugadora</label><div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;"><input id="newCharacterCardColor" type="color" value="#351B45" aria-label="Color de la tarjeta" style="width:64px;height:42px;padding:.2rem;cursor:pointer;"><small style="color:var(--ink-muted);">Elige el tono que identificará tu tarjeta en Jugadoras.</small></div></div>
-        <div class="form-group"><label>Presentación</label><textarea id="newCharacterDescription" class="form-control" rows="2" placeholder="Una breve presentación de tu personaje"></textarea></div>
-        <div class="form-group"><label>Ficha del personaje</label><textarea id="newCharacterSheet" class="form-control" rows="4" placeholder="Linaje, magia, historia, rasgos..."></textarea></div>
-        <button class="btn-primary-arcane" id="createCharacterBtn" onclick="createLegaciesCharacter()">Crear personaje</button>
-      </div>
-      <p style="font-size:0.82rem;color:var(--ink-muted);margin-top:0.8rem;">La selección de personaje se guarda en este navegador. Los datos de cada ficha se guardan en tu cuenta.</p>
-    </div>
-  </div>
-
-  <div class="modal-backdrop" id="profileModal">
-    <div class="modal-box modal-wide">
-      <button class="modal-close" onclick="closeProfileModal()">&times;</button>
-      <div id="profileHeaderArea"></div>
-      <div class="profile-body">
-        <div class="admin-tabs" style="margin-bottom:1rem;">
-          <button class="filter-chip active" id="profTabBtn-sheet" onclick="switchProfileTab('sheet', this)">Ficha y Perfil</button>
-          <button class="filter-chip" id="profTabBtn-posts" onclick="switchProfileTab('posts', this)">Publicaciones</button>
-          <button class="filter-chip" id="profTabBtn-pm" onclick="switchProfileTab('pm', this)">Chat Privado</button>
-          <button class="filter-chip" id="profTabBtn-affinity" onclick="switchProfileTab('affinity', this)">Afinidad</button>
-        </div>
-        <div id="profileContentArea"></div>
-      </div>
-    </div>
-  </div>
-
-  <div class="toast" id="toast"></div>
-
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-  <script>
+</style></head><body><header class="navbar"><div class="nav-container" id="navContainer"><div class="brand" onclick="navigateTo('inicio')"><span id="navCrestWrap" style="display:inline-flex;"><svg width="34" height="34" viewBox="0 0 64 64" fill="none"><path d="M32 4L56 14V31C56 46.5 45.5 56.5 32 60C18.5 56.5 8 46.5 8 31V14L32 4Z" fill="#351B45" stroke="#C69A3C" stroke-width="3"/><path d="M32 15L36.2 26.8L48 31L36.2 35.2L32 47L27.8 35.2L16 31L27.8 26.8L32 15Z" fill="#C69A3C"/></svg></span><span class="brand-title">LEGACIES</span></div><button class="mobile-toggle" onclick="toggleMobileMenu()">Menú</button><ul class="nav-links"><li><button class="nav-btn" data-view="tablon" onclick="navigateTo('tablon')">Tablón</button></li><li><button class="nav-btn" data-view="dados" onclick="navigateTo('dados')">Dados</button></li><li><button class="nav-btn" data-view="dormitorios" onclick="navigateTo('dormitorios')">Dormitorios</button></li><li><button class="nav-btn" data-view="npc" onclick="navigateTo('npc')">NPC</button></li><li><button class="nav-btn" data-view="cronicas" onclick="navigateTo('cronicas')">Crónicas</button></li><li><button class="nav-btn" data-view="jugadoras" onclick="navigateTo('jugadoras')">Jugadoras</button></li><li><button class="nav-btn" data-view="mensajes" onclick="navigateTo('mensajes')">Mensajes</button></li></ul><div class="nav-actions"><button class="btn-outline-gold" id="onlineCountBtn" onclick="openOnlineModal()" style="display:none;" aria-label="Ver personajes conectados">🟢 <span id="onlineCountNumber">0</span> en línea</button><button class="btn-outline-gold" id="authBtn" onclick="openAuthModal()">Iniciar sesión</button><button class="btn-outline-gold" id="charactersBtn" onclick="openCharactersModal()" style="display:none;">Mis personajes</button><button class="btn-outline-gold nav-admin-icon" onclick="openAdminSection()" title="Administración" aria-label="Administración">⚙</button></div></div></header><main><section id="view-inicio" class="view-section active arcane-bg"><div class="hero" id="heroContainer"><div class="hero-frame"><div class="hero-crest" id="heroCrestWrap"><svg width="76" height="76" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="28" stroke="#C69A3C" stroke-width="1.5" stroke-dasharray="4 3"/><path d="M32 7L52 16V31C52 44.5 43.2 53.3 32 56.5C20.8 53.3 12 44.5 12 31V16L32 7Z" fill="#351B45" stroke="#C69A3C" stroke-width="2.5"/><path d="M32 17L35.5 27.5L46 31L35.5 34.5L32 45L28.5 34.5L18 31L28.5 27.5L32 17Z" fill="#C69A3C"/></svg></div><h1 class="hero-title" id="heroTitleDisplay">LEGACIES</h1><p class="hero-academy" id="heroAcademyDisplay">Academia Rosewood</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div><p class="hero-motto" id="heroMottoDisplay">«Toda historia deja un eco. Tú decides cuál será el tuyo.»</p><div class="hero-actions"><button class="btn-gold" onclick="navigateTo('tablon')">Ir al Tablón</button><button class="btn-primary-arcane" onclick="navigateTo('dados')">Oráculo de Dados</button><button class="btn-primary-arcane" onclick="navigateTo('dormitorios')">Explorar Dormitorios</button></div></div></div></section><section id="view-tablon" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Tablón Informativo</h2><p id="boardDescDisplay">Comunicados oficiales de la Dirección de Rosewood, misiones vigentes, torneos y convocatorias.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="filter-bar" id="boardFilters"><button class="filter-chip active" onclick="filterPosts('Todas', this)">Todas</button><button class="filter-chip" onclick="filterPosts('Importante', this)">Importante</button><button class="filter-chip" onclick="filterPosts('Eventos', this)">Eventos</button><button class="filter-chip" onclick="filterPosts('Misiones', this)">Misiones</button><button class="filter-chip" onclick="filterPosts('Actividades', this)">Actividades</button><button class="filter-chip" onclick="filterPosts('Avisos generales', this)">Avisos generales</button></div><div class="board-grid" id="boardGrid"></div></div></section><section id="view-dados" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Oráculo de Dados</h2><p id="oracleDescDisplay">Canaliza el destino de tu personaje. Las tiradas quedan selladas en el archivo público de Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div style="text-align:center;"><span id="serverStatusPill" class="server-pill connected">Conectado al Servidor Seguro (Google Sheets)</span></div><div class="oracle-layout"><div class="card"><h3 style="margin-bottom:1rem;">Invocar Tirada</h3><div class="form-group"><label for="rollCharacter">Nombre del personaje *</label><input id="rollCharacter" class="form-control" type="text" placeholder="Escribe el nombre de tu personaje" maxlength="60" oninput="this.classList.remove('input-error')" /></div><div class="form-group"><label for="rollAction">Acción, habilidad o hechizo (opcional)</label><input id="rollAction" class="form-control" type="text" placeholder="Ej. Canalizar luz astral / Persuasión" maxlength="90" /></div><div class="dice-buttons"><button class="dice-btn" onclick="executeRoll('1d10')">1d10<span>Destino Simple</span></button><button class="dice-btn" onclick="executeRoll('3d10')">3d10<span>Tríada Arcana</span></button><button class="dice-btn" onclick="executeRoll('1d100')">1d100<span>Porcentual</span></button></div></div><div class="dice-result-box" id="diceResultBox"><span class="font-meta" style="font-size:0.78rem; letter-spacing:0.12em; color:#C69A3C; text-transform:uppercase;">Altar del Oráculo</span><p style="color:#E8D9B8; margin-top:0.6rem;">Introduce el nombre de tu personaje a la izquierda y pulsa uno de los tres dados.</p></div></div><div style="margin-top:2.5rem;"><div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:0.8rem; margin-bottom:0.8rem;"><h3>Historial Público de Tiradas</h3><div style="display:flex;gap:.65rem;align-items:center;flex-wrap:wrap;"><button class="btn-primary-arcane" onclick="refreshRolls(true)">↻ Actualizar historial</button><label class="dice-preserve-toggle" title="Si está activado, la nueva partida conservará las tiradas anteriores."><input type="checkbox" id="preserveDiceHistory" /><span class="dice-toggle-track"><span></span></span><span>Conservar historial (no borrar al iniciar)</span></label><button id="newDiceGameBtn" class="btn-danger" onclick="startNewDiceGame()" style="display:inline-flex;">Nueva partida · Vaciar historial</button></div></div><div class="history-table-wrap"><table><thead><tr><th>Personaje</th><th>Dado</th><th>Resultado</th><th>Acción / Hechizo</th><th>Fecha y hora</th></tr></thead><tbody id="rollsHistoryBody"></tbody></table></div></div></div></section><section id="view-dormitorios" class="view-section paper-texture"><div id="housesOverview" class="container"><div class="section-header"><h2>Los Cuatro Dormitorios</h2><p id="housesDescDisplay">Cada residencia de Rosewood custodia un animal emblema, instalaciones propias y uniformes tradicionales. Solo sus integrantes pueden acceder a su interior.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="houses-grid" id="housesGrid"></div></div><div id="houseDetailContainer" style="display:none;"></div></section><section id="view-npc" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Personajes</h2><p id="npcDescDisplay">Explora los perfiles de Rosewood y conoce también a los personajes que existen fuera de la academia.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="filter-bar" id="npcFilters"><button class="filter-chip active" onclick="filterNpcs('Profesor', this)">Profesores</button><button class="filter-chip" onclick="filterNpcs('Amaranthe', this)">Amaranthe</button><button class="filter-chip" onclick="filterNpcs('Veritastra', this)">Veritastra</button><button class="filter-chip" onclick="filterNpcs('Oathwyn', this)">Oathwyn</button><button class="filter-chip" onclick="filterNpcs('Aurelion', this)">Aurelion</button><button class="filter-chip" onclick="filterNpcs('NPC', this)">NPC</button></div><div class="npc-grid" id="npcGrid"></div></div></section><section id="view-cronicas" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Crónicas de la Academia</h2><p id="chroniclesDescDisplay">Registro vivo de los acontecimientos históricos y capítulos memorables de Academia Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="chronicle-list" id="chroniclesList"></div></div></section><section id="view-jugadoras" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Personajes de las Jugadoras</h2><p>Descubre los personajes que forman parte de la comunidad de Rosewood.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="card" style="margin-bottom:1rem;"><div class="messages-directory-heading"><div><span class="font-meta">COMUNIDAD DE ROSEWOOD</span><h3>Personajes publicados</h3></div><span class="badge" id="playersPageCount">0 personajes</span></div><div id="playersDirectoryGrid" class="players-directory-grid"><p class="messages-empty-strip">Inicia sesión para consultar los personajes publicados.</p></div></div></div></section><section id="view-mensajes" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Mensajería de Rosewood</h2><p>Un espacio para mantener cada conversación en su lugar.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="messages-directory card"><div class="messages-directory-heading"><div><span class="font-meta">CORRESPONDENCIA</span><h3>Personajes</h3></div><span class="badge" id="messagesPlayerCount">0 personajes</span></div><div id="messagesPlayerStrip" class="messages-player-strip"><p class="messages-empty-strip">Inicia sesión para ver los personajes y sus conversaciones.</p></div></div><div class="messages-directory card" style="margin-top:1rem;"><div class="messages-directory-heading"><div><span class="font-meta">CONVERSACIONES COMPARTIDAS</span><h3>Grupos</h3></div><button class="btn-primary-arcane" type="button" onclick="openCreateMessageGroup()">＋ Crear grupo</button></div><div id="messagesGroupsList" class="messages-player-strip"><p class="messages-empty-strip">Inicia sesión para consultar tus grupos.</p></div><div id="messagesGroupComposer" style="display:none;padding:.8rem 0;"><input id="messagesGroupName" class="form-control" maxlength="70" placeholder="Nombre del grupo"><p class="font-meta" style="margin:.7rem 0 .35rem;">INVITAR JUGADORAS</p><div id="messagesGroupPlayers" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div><p class="font-meta" style="margin:.7rem 0 .35rem;">AÑADIR PERSONAJES NPC (SOLO DIRECCIÓN)</p><div id="messagesGroupNpcs" style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:.35rem;"></div><div style="display:flex;gap:.5rem;margin-top:.8rem;"><button class="btn-primary-arcane" type="button" onclick="createMessageGroup()">Crear</button><button class="btn-secondary" type="button" onclick="closeCreateMessageGroup()">Cancelar</button></div></div><div id="messagesGroupConversation" style="display:none;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);"></div></div><div class="messages-workspace card" id="messagesWorkspace"><div class="messages-empty-state" id="messagesEmptyState"><div class="messages-empty-crest">✉</div><h3>Elige una jugadora</h3><p>Selecciona uno de los retratos de arriba para abrir aquí sus conversaciones.</p></div><div id="messagesConversationView" style="display:none;"><div class="messages-conversation-header"><div class="messages-selected-identity" id="messagesSelectedIdentity"></div><div class="messages-kind-tabs" role="tablist" aria-label="Tipo de conversación"><span class="filter-chip active">Privados <span id="messagesPrivadosBadge"></span></span></div></div><div id="messagesNpcStrip" class="messages-npc-strip" aria-label="Conversaciones con personajes"></div><div id="messagesConversationContent" class="messages-conversation-content"></div></div></div></div></section><section id="view-admin" class="view-section paper-texture"><div class="container"><div class="section-header"><h2>Panel de Administración</h2><p>Edita textos, fotografías, dormitorios, uniformes, personajes, avisos y crónicas.</p><div class="ornament-divider"><span class="ornament-stars">✦ ✧ ✦</span></div></div><div class="card"><div class="admin-tabs"><button class="filter-chip active" onclick="switchAdminTab('config', this)">Portada y Textos</button><button class="filter-chip" onclick="switchAdminTab('posts', this)">Tablón</button><button class="filter-chip" onclick="switchAdminTab('houses', this)">Dormitorios / Uniformes</button><button class="filter-chip" onclick="switchAdminTab('npcs', this)">Profesores / Estudiantes</button><button class="filter-chip" onclick="switchAdminTab('chronicles', this)">Crónicas</button><button class="filter-chip" onclick="switchAdminTab('server', this)">Google Sheets</button></div><div id="admin-tab-config" class="admin-panel active"><div class="admin-grid"><div><h3 style="margin-bottom:0.8rem;">Identidad y Portada</h3><div class="form-group"><label>Título Principal</label><input id="cfgTitle" class="form-control" type="text" /></div><div class="form-group"><label>Nombre de la Academia</label><input id="cfgAcademy" class="form-control" type="text" /></div><div class="form-group"><label>Frase / Lema</label><input id="cfgMotto" class="form-control" type="text" /></div><div class="form-group"><label>Imagen de fondo de portada</label><div class="upload-row"><input id="cfgHeroBg" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'cfgHeroBg',900)" /></label></div></div><div class="form-group"><label>Imagen del escudo / logo</label><div class="upload-row"><input id="cfgCrest" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'cfgCrest',320)" /></label></div></div></div><div><h3 style="margin-bottom:0.8rem;">Descripciones de Secciones</h3><div class="form-group"><label>Tablón Informativo</label><input id="cfgBoardDesc" class="form-control" type="text" /></div><div class="form-group"><label>Oráculo de Dados</label><input id="cfgOracleDesc" class="form-control" type="text" /></div><div class="form-group"><label>Dormitorios</label><input id="cfgHousesDesc" class="form-control" type="text" /></div><div class="form-group"><label>Profesores y Estudiantes</label><input id="cfgNpcDesc" class="form-control" type="text" /></div><div class="form-group"><label>Crónicas</label><input id="cfgChronDesc" class="form-control" type="text" /></div><div class="form-group"><label>Chat</label><input id="cfgChatDesc" class="form-control" type="text" /></div><button class="btn-primary-arcane" onclick="saveConfigAdmin()">Guardar Textos y Portada</button></div></div></div><div id="admin-tab-posts" class="admin-panel"><div class="admin-grid"><div><h3 style="margin-bottom:1rem;" id="postFormTitle">Nueva Publicación</h3><input type="hidden" id="editPostId" /><div class="form-group"><label>Título *</label><input id="postTitleInput" class="form-control" type="text" /></div><div class="form-group"><label>Categoría</label><select id="postCategoryInput" class="form-control"><option value="Importante">Importante</option><option value="Eventos">Eventos</option><option value="Misiones">Misiones</option><option value="Actividades">Actividades</option><option value="Avisos generales">Avisos generales</option></select></div><div class="form-group"><label>Autor o responsable</label><input id="postAuthorInput" class="form-control" type="text" /></div><div class="form-group"><label>Imagen del aviso</label><div class="upload-row"><input id="postImageInput" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'postImageInput',650)" /></label></div></div><div class="form-group"><label>Descripción *</label><textarea id="postDescInput" class="form-control" rows="4"></textarea></div><div class="form-group" style="display:flex; align-items:center; gap:0.5rem;"><input id="postImportantInput" type="checkbox" /><label for="postImportantInput" style="margin:0;">Destacar como importante</label></div><div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="savePostAdmin()">Guardar</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetPostForm()">Limpiar</button></div></div><div><h3 style="margin-bottom:1rem;">Avisos Publicados</h3><div id="adminPostsList"></div></div></div></div><div id="admin-tab-houses" class="admin-panel"><div class="form-group" style="max-width:360px;"><label>Selecciona el Dormitorio a editar</label><select id="adminHouseSelect" class="form-control" onchange="loadHouseIntoForm(this.value)"><option value="amaranthe">Amaranthe</option><option value="veritastra">Veritastra</option><option value="oathwyn">Oathwyn</option><option value="aurelion">Aurelion</option></select></div><div class="admin-grid"><div><div class="form-group"><label>Nombre</label><input id="hName" class="form-control" type="text" /></div><div class="form-group"><label>Color representativo (Hex)</label><input id="hColor" class="form-control" type="text" /></div><div class="form-group"><label>Animal emblema</label><input id="hAnimal" class="form-control" type="text" /></div><div class="form-group"><label>Lema</label><input id="hMotto" class="form-control" type="text" /></div><div class="form-group"><label>Descripción breve</label><textarea id="hShort" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Presentación completa</label><textarea id="hFull" class="form-control" rows="3"></textarea></div><div class="form-group"><label>Filosofía</label><textarea id="hPhil" class="form-control" rows="2"></textarea></div></div><div><div class="form-group"><label>Tradiciones</label><textarea id="hTrad" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Sala Común</label><textarea id="hRoom" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Imagen principal del Dormitorio</label><div class="upload-row"><input id="hImgMain" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgMain',650)" /></label></div></div><div class="form-group"><label>Instalaciones (descripción)</label><textarea id="hFac" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Foto de Instalaciones</label><div class="upload-row"><input id="hImgFac" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgFac',600)" /></label></div></div><div class="form-group"><label>Uniformes (descripción)</label><textarea id="hUni" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Foto de Uniformes</label><div class="upload-row"><input id="hImgUni" class="form-control" type="text" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'hImgUni',600)" /></label></div></div><button class="btn-primary-arcane" onclick="saveHouseAdmin()">Guardar Dormitorio</button></div></div></div><div id="admin-tab-npcs" class="admin-panel"><div class="admin-character-form"><div><h3 style="margin-bottom:1rem;" id="npcFormTitle">Añadir Personaje</h3><input type="hidden" id="editNpcId" /><div class="form-group"><label>Tipo</label><select id="npcTypeInput" class="form-control" onchange="updateNpcTypeFields()"><option value="Profesor">Profesor</option><option value="Estudiante">Estudiante</option><option value="NPC">NPC (sin dormitorio)</option></select></div><div class="form-group"><label>Nombre *</label><input id="npcNameInput" class="form-control" type="text" /></div><div class="form-group"><label>Cargo / Año o Especialidad *</label><input id="npcRoleInput" class="form-control" type="text" placeholder="Ej. Maestra de Astrología / 3er Año" /></div><div class="form-group"><label>Dormitorio / Afiliación</label><select id="npcHouseInput" class="form-control"><option value="">No aplica / Sin dormitorio</option><option value="Dirección">Dirección</option><option value="Amaranthe">Amaranthe</option><option value="Veritastra">Veritastra</option><option value="Oathwyn">Oathwyn</option><option value="Aurelion">Aurelion</option><option value="NPC">NPC (fuera de Rosewood)</option></select></div><div class="form-group"><label>Fotografía</label><div class="upload-row"><input id="npcPhotoInput" class="form-control" type="text" placeholder="URL o sube imagen" oninput="updateNpcPreview()" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'npcPhotoInput',280,updateNpcPreview)" /></label><img id="npcPreviewImg" class="img-preview-mini" alt="" /></div></div><div class="form-group"><label>Descripción breve</label><textarea id="npcDescInput" class="form-control" rows="2"></textarea></div><div class="form-group"><label>Ficha del personaje (linaje, magia, historia, rasgos)</label><textarea id="npcSheetInput" class="form-control" rows="4" placeholder="Detalles de su ficha completa..."></textarea></div><div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="saveNpcAdmin()">Guardar Personaje</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetNpcForm()">Limpiar</button></div></div></div><section class="admin-character-directory"><h3 style="margin:1.5rem 0 .75rem;">Personajes registrados</h3><input id="adminCharacterSearch" class="form-control" type="search" placeholder="Buscar por nombre, tipo o dormitorio..." oninput="renderAdminCharacterDirectory(this.value)" aria-label="Buscar personajes por nombre, tipo o dormitorio" /><div id="adminNpcsList" class="admin-character-cards"></div></section></div><div id="admin-tab-chronicles" class="admin-panel"><div class="admin-grid"><div><h3 style="margin-bottom:1rem;" id="chronFormTitle">Nueva Crónica</h3><input type="hidden" id="editChronId" /><div class="form-group"><label>Título *</label><input id="chronTitleInput" class="form-control" type="text" /></div><div class="form-group"><label>Fecha o ciclo</label><input id="chronDateInput" class="form-control" type="text" placeholder="Ej. Otoño — Año 412" /></div><div class="form-group"><label>Ilustración (opcional)</label><div class="upload-row"><input id="chronImgInput" class="form-control" type="text" placeholder="URL o sube imagen" /><label class="btn-upload">Subir imagen<input type="file" accept="image/*" onchange="uploadToInput(this,'chronImgInput',650)" /></label></div></div><div class="form-group"><label>Relato *</label><textarea id="chronBodyInput" class="form-control" rows="4"></textarea></div><div style="display:flex; gap:0.6rem;"><button class="btn-primary-arcane" onclick="saveChronicleAdmin()">Guardar Crónica</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="resetChronForm()">Limpiar</button></div></div><div><h3 style="margin-bottom:1rem;">Crónicas Publicadas</h3><div id="adminChroniclesList"></div></div></div></div><div id="admin-tab-server" class="admin-panel"><h3 style="margin-bottom:0.6rem;">Conexión con Google Apps Script & Google Sheets</h3><p style="margin-bottom:1rem; color:var(--ink-muted);">Tu URL conectada actualmente:</p><div class="form-group" style="max-width:680px;"><label>URL del Web App</label><input id="scriptUrlInput" class="form-control" type="url" /></div><div style="display:flex; gap:0.7rem; flex-wrap:wrap;"><button class="btn-primary-arcane" onclick="saveScriptUrl()">Guardar y Conectar</button><button class="btn-outline-gold" style="color:var(--ink-dark);" onclick="clearScriptUrl()">Usar enlace por defecto</button></div></div></div></div></section></main><footer><span class="font-cinzel" style="color:var(--gold); letter-spacing:0.12em;">LEGACIES</span> · Academia Rosewood · «Toda historia deja un eco. Tú decides cuál será el tuyo.»</footer><div class="modal-backdrop" id="authModal"><div class="modal-box"><button class="modal-close" onclick="closeAuthModal()">&times;</button><h3 style="margin-bottom:0.4rem;">Acceso al Portal</h3><p style="color:var(--ink-muted); margin-bottom:1.2rem;">Entra a Rosewood con tu correo o crea tu cuenta.</p><div class="form-group"><label>Correo electrónico</label><input id="loginEmail" class="form-control" type="email" autocomplete="email" placeholder="tu@correo.com" /></div><div class="form-group"><label>Contraseña</label><input id="loginPassword" class="form-control" type="password" autocomplete="current-password" placeholder="Tu contraseña" onkeydown="if(event.key==='Enter') submitLogin();" /></div><div class="form-group" id="registerNameGroup" style="display:none;"><label>Nombre para mostrar</label><input id="registerName" class="form-control" type="text" autocomplete="name" placeholder="Tu nombre o personaje" /></div><p id="authModeHint" style="font-size:0.9rem;color:var(--ink-muted);">¿Primera vez en Rosewood? Crea una cuenta.</p><div style="display:flex; gap:0.7rem; justify-content:flex-end; flex-wrap:wrap; margin-top:1.2rem;"><button class="btn-outline-gold" style="color:var(--ink-dark);" id="logoutBtn" onclick="logoutUser()">Cerrar sesión</button><button class="btn-outline-gold" style="color:var(--ink-dark);" id="authModeBtn" onclick="toggleAuthMode()">Crear cuenta</button><button class="btn-primary-arcane" id="authSubmitBtn" onclick="submitLogin()">Entrar</button></div></div></div><div class="modal-backdrop" id="charactersModal"><div class="modal-box"><button class="modal-close" onclick="closeCharactersModal()">&times;</button><h3 style="margin-bottom:0.4rem;">Mis personajes</h3><p style="color:var(--ink-muted); margin-bottom:1rem;">Cada cuenta puede tener hasta dos personajes. Sus fichas se guardan por separado.</p><div id="charactersList" style="display:grid;gap:0.7rem;"></div><div id="newCharacterForm" style="margin-top:1.2rem;"><div class="form-group"><label>Nombre del personaje</label><input id="newCharacterName" class="form-control" maxlength="60" placeholder="Nombre de tu personaje" /></div><div class="form-group"><label>Dormitorio (opcional)</label><select id="newCharacterDorm" class="form-control"><option value="">Por asignar</option><option>Amaranthe</option><option>Veritastra</option><option>Oathwyn</option><option>Aurelion</option></select></div><div class="form-group"><label>Cargo / Año</label><input id="newCharacterRole" class="form-control" maxlength="100" placeholder="Ej. Estudiante de segundo año" /></div><div class="form-group"><label>Fotografía (URL)</label><input id="newCharacterPhoto" class="form-control" placeholder="https://..." /></div><div class="form-group"><label>Color de tu tarjeta de jugadora</label><div style="display:flex;align-items:center;gap:.75rem;flex-wrap:wrap;"><input id="newCharacterCardColor" type="color" value="#351B45" aria-label="Color de la tarjeta" style="width:64px;height:42px;padding:.2rem;cursor:pointer;"><small style="color:var(--ink-muted);">Elige el tono que identificará tu tarjeta en Jugadoras.</small></div></div><div class="form-group"><label>Presentación</label><textarea id="newCharacterDescription" class="form-control" rows="2" placeholder="Una breve presentación de tu personaje"></textarea></div><div class="form-group"><label>Ficha del personaje</label><textarea id="newCharacterSheet" class="form-control" rows="4" placeholder="Linaje, magia, historia, rasgos..."></textarea></div><button class="btn-primary-arcane" id="createCharacterBtn" onclick="createLegaciesCharacter()">Crear personaje</button></div><p style="font-size:0.82rem;color:var(--ink-muted);margin-top:0.8rem;">La selección de personaje se guarda en este navegador. Los datos de cada ficha se guardan en tu cuenta.</p></div></div><div class="modal-backdrop" id="profileModal"><div class="modal-box modal-wide"><button class="modal-close" onclick="closeProfileModal()">&times;</button><div id="profileHeaderArea"></div><div class="profile-body"><div class="admin-tabs" style="margin-bottom:1rem;"><button class="filter-chip active" id="profTabBtn-sheet" onclick="switchProfileTab('sheet', this)">Ficha y Perfil</button><button class="filter-chip" id="profTabBtn-posts" onclick="switchProfileTab('posts', this)">Publicaciones</button><button class="filter-chip" id="profTabBtn-pm" onclick="switchProfileTab('pm', this)">Chat Privado</button><button class="filter-chip" id="profTabBtn-affinity" onclick="switchProfileTab('affinity', this)">Afinidad</button></div><div id="profileContentArea"></div></div></div></div><div class="toast" id="toast"></div><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script><script>
     const firebaseConfig = {
       apiKey: "AIzaSyC0S9z2cbqAQITLB_v3CXZHoQWVbx9SGIM",
       authDomain: "legacies-accounts.firebaseapp.com",
@@ -795,8 +400,7 @@
     const legaciesAuth = firebase.auth();
     const legaciesDb = firebase.firestore();
     const LEGACIES_ADMIN_UID = "uuBVHTU66yZ5hDP0ikhVd8n1bEy2";
-  </script>
-  <script>
+  </script><script>
     const DEFAULT_SCRIPT_URL = window.LEGACIES_SCRIPT_URL || "";
 
     const DEFAULT_CONFIG = {
@@ -984,7 +588,7 @@
       if(!state.user || !getScriptUrl()) return;
       try {
         const token=await getCurrentFirebaseIdToken();
-        const res=await apiPost({action:"getUnreadCounts",idToken:token,ownerUid:activeMessagesOwnerUid,channels:[]});
+        const res=await apiPost({action:"getUnreadCounts",idToken:token,ownerUid:(state.user.uid===LEGACIES_ADMIN_UID?"":activeMessagesOwnerUid),channels:[]});
         if(res&&res.ok) { messagesUnread=res.unread||messagesUnread; messagesUnread.total=Number(messagesUnread.privados||0); }
         const p=document.getElementById("messagesPrivadosBadge");
         if(p)p.innerHTML=messagesUnread.privados?`<span class="badge" style="background:#9E3F42;color:white;">${messagesUnread.privados}</span>`:"";
@@ -1002,7 +606,7 @@
       if(!state.user) return;
       try {
         const token=await getCurrentFirebaseIdToken();
-        await apiPost({action:"markMessagesRead",idToken:token,type,conversation,ownerUid,characterId:activeMessagesCharacterId});
+        await apiPost({action:"markMessagesRead",idToken:token,type,conversation,ownerUid,characterId:activeMessagesCharacterId,characterName:(groupMessagePlayers().find(p=>p.characterId===activeMessagesCharacterId)||{}).characterName||""});
       } catch(e){console.warn("No se pudo marcar como leído",e);}
     }
     let activeMessagesNpcId = "direccion";
@@ -1916,18 +1520,23 @@
       const npc = state.npcs.find(n => n.id === state.activeProfileId); if (!npc) return;
       const input=document.getElementById("pmInputBox"), msg=input?input.value.trim():"";
       const isAdmin=state.user && state.user.uid===LEGACIES_ADMIN_UID;
-      let playerName="", ownerUid="";
+      let playerName="", ownerUid="", characterId="";
       if (senderType === "character") {
         if (!isAdmin || !(await ensureAdminPassword())) return;
         const targetSelect=document.getElementById("pmAdminTargetSelect");
         const selectedId=targetSelect ? targetSelect.value : "";
         const matched=(state.playerProfiles||[]).find(p=>(p.publicId||p.id)===selectedId || p.name===state.activePmPlayerTarget);
         if(!matched){showToast("Selecciona un personaje de jugadora antes de enviar.");return;}
-        playerName=String(matched.name || "").trim(); ownerUid=matched.ownerUid;
+        playerName=String(matched.name || "").trim(); ownerUid=matched.ownerUid; characterId=String(matched.publicId||matched.id||"");
         state.activePmPlayerTarget=playerName;
-      } else { playerName=(state.user&&state.user.name)||"Estudiante"; ownerUid=state.user&&state.user.uid; }
+      } else {
+        playerName=(state.user&&state.user.name)||localStorage.getItem("legacies_pm_player")||"Estudiante";
+        ownerUid=state.user&&state.user.uid;
+        const ownProfile=(state.playerProfiles||[]).find(p=>p.ownerUid===ownerUid && String(p.name||"").trim().toLocaleLowerCase("es")===playerName.trim().toLocaleLowerCase("es"));
+        characterId=ownProfile?String(ownProfile.publicId||ownProfile.id||""):"";
+      }
       if(!playerName||!ownerUid||!msg){showToast("Falta la cuenta destinataria o el mensaje.");return;}
-      if(getScriptUrl()) { const token=await getCurrentFirebaseIdToken(); const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:npc.id,npcName:npc.name,playerName,senderType,message:msg}); if(!res.ok){showToast(res.error||"No se pudo enviar.");return;} state.privateMsgs.push(res.msg); }
+      if(getScriptUrl()) { const token=await getCurrentFirebaseIdToken(); const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:npc.id,npcName:npc.name,playerName,characterId,senderType,message:msg}); if(!res.ok){showToast(res.error||"No se pudo enviar.");return;} state.privateMsgs.push(res.msg); }
       else { showToast("La mensajería privada requiere conexión con el servidor."); return; }
       renderProfileModal();
     }
@@ -2591,21 +2200,7 @@
         if (state.activeProfileId && state.activeProfileTab === "pm") fetchPrivateMessagesForCurrentContext().then(renderProfileModal);
       }, 10000);
     })();
-  </script>
-  <div id="onlinePresenceModal" class="modal-overlay" style="display:none;z-index:1200;" onclick="if(event.target===this)closeOnlineModal()">
-    <div class="modal-content" style="max-width:520px;width:calc(100% - 2rem);max-height:80vh;overflow:auto;">
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;">
-        <div><h2 style="margin:0;">Personajes en línea</h2><p style="margin:.25rem 0 0;color:var(--ink-muted);font-size:.9rem;">Cuentas conectadas en este momento</p></div>
-        <button class="btn-outline-gold" onclick="closeOnlineModal()" aria-label="Cerrar">✕</button>
-      </div>
-      <div id="onlinePresenceList" class="online-presence-list"><p style="color:var(--ink-muted);">Cargando conexiones…</p></div>
-    </div>
-  </div>
-  <div class="image-lightbox" id="imageLightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" onclick="if(event.target===this) closeImageLightbox()">
-    <button class="image-lightbox-close" type="button" aria-label="Cerrar imagen" onclick="closeImageLightbox()">&times;</button>
-    <figure><img id="imageLightboxPhoto" alt="" /><figcaption id="imageLightboxCaption"></figcaption></figure>
-  </div>
-  <script>
+  </script><div id="onlinePresenceModal" class="modal-overlay" style="display:none;z-index:1200;" onclick="if(event.target===this)closeOnlineModal()"><div class="modal-content" style="max-width:520px;width:calc(100% - 2rem);max-height:80vh;overflow:auto;"><div style="display:flex;align-items:center;justify-content:space-between;gap:1rem;margin-bottom:1rem;"><div><h2 style="margin:0;">Personajes en línea</h2><p style="margin:.25rem 0 0;color:var(--ink-muted);font-size:.9rem;">Cuentas conectadas en este momento</p></div><button class="btn-outline-gold" onclick="closeOnlineModal()" aria-label="Cerrar">✕</button></div><div id="onlinePresenceList" class="online-presence-list"><p style="color:var(--ink-muted);">Cargando conexiones…</p></div></div></div><div class="image-lightbox" id="imageLightbox" role="dialog" aria-modal="true" aria-label="Imagen ampliada" onclick="if(event.target===this) closeImageLightbox()"><button class="image-lightbox-close" type="button" aria-label="Cerrar imagen" onclick="closeImageLightbox()">&times;</button><figure><img id="imageLightboxPhoto" alt="" /><figcaption id="imageLightboxCaption"></figcaption></figure></div><script>
     function openImageLightbox(src, caption) {
       if (!src) return;
       const box=document.getElementById('imageLightbox');
@@ -2620,6 +2215,4 @@
       const photo=document.getElementById('imageLightboxPhoto'); if(photo) photo.removeAttribute('src');
     }
     document.addEventListener('keydown', function(event) { if(event.key==='Escape') { closeImageLightbox(); closeOnlineModal(); } });
-  </script>
-</body>
-</html>
+  </script></body></html>
