@@ -549,11 +549,11 @@
         </div>
         <div class="messages-directory card">
           <div class="messages-directory-heading">
-            <div><span class="font-meta">CORRESPONDENCIA</span><h3>Jugadoras</h3></div>
-            <span class="badge" id="messagesPlayerCount">0 jugadoras</span>
+            <div><span class="font-meta">CORRESPONDENCIA</span><h3>Personajes</h3></div>
+            <span class="badge" id="messagesPlayerCount">0 personajes</span>
           </div>
           <div id="messagesPlayerStrip" class="messages-player-strip">
-            <p class="messages-empty-strip">Inicia sesión para ver las jugadoras y sus personajes.</p>
+            <p class="messages-empty-strip">Inicia sesión para ver los personajes y sus conversaciones.</p>
           </div>
         </div>
         <div class="messages-directory card" style="margin-top:1rem;">
@@ -918,18 +918,23 @@
     }
 
     let activeMessagesOwnerUid = "";
+    let activeMessagesCharacterId = "";
     let activeMessagesKind = "privados";
     let messagesUnread = { privados:0 };
     function messageReadMarkerKey(type, conversation) { return `legacies_read_${state.user?.uid||"anon"}_${type}_${conversation}`; }
     function groupMessagePlayers() {
-      const groups = new Map();
-      const profilesForViewer = (state.user && state.user.uid === LEGACIES_ADMIN_UID) ? (state.playerProfiles || []) : (state.playerProfiles || []).filter(profile => profile.ownerUid === (state.user && state.user.uid));
-      profilesForViewer.forEach(profile => {
-        const owner = profile.ownerUid || "unknown";
-        if (!groups.has(owner)) groups.set(owner, { ownerUid:owner, label:profile.ownerName || profile.playerName || profile.displayName || profile.name || "Jugadora", profiles:[] });
-        groups.get(owner).profiles.push(profile);
-      });
-      return [...groups.values()].map(g => { g.profiles.sort((a,b)=>String(a.name||"").localeCompare(String(b.name||""),"es")); const lead=g.profiles[0]; g.label=lead.ownerName || lead.playerName || lead.displayName || lead.name || g.label; g.photo=lead.photo || ""; return g; }).sort((a,b)=>a.label.localeCompare(b.label,"es"));
+      const isAdmin = state.user && state.user.uid === LEGACIES_ADMIN_UID;
+      return (state.playerProfiles || [])
+        .filter(profile => profile && profile.ownerUid && profile.ownerUid !== LEGACIES_ADMIN_UID && profile.name && (isAdmin || profile.ownerUid === state.user?.uid))
+        .map(profile => ({
+          ownerUid: profile.ownerUid,
+          characterId: String(profile.publicId || profile.id || ""),
+          characterName: String(profile.name || "Personaje"),
+          label: profile.ownerName || profile.playerName || profile.displayName || "Jugadora",
+          photo: profile.photo || "",
+          profiles: [profile]
+        }))
+        .sort((a,b) => a.characterName.localeCompare(b.characterName,"es"));
     }
     function safePlayerCardColor(value) { return /^#[0-9a-fA-F]{6}$/.test(String(value||"")) ? value : "#351B45"; }
     function renderPlayersPage() {
@@ -963,36 +968,41 @@
     function renderMessagesDirectory() {
       const strip=document.getElementById("messagesPlayerStrip"), count=document.getElementById("messagesPlayerCount");
       if(!strip||!count)return;
-      const players=groupMessagePlayers(); count.textContent=`${players.length} ${players.length===1?"jugadora":"jugadoras"}`;
-      if(!players.length){strip.innerHTML=`<p class="messages-empty-strip">${state.user?"Todavía no hay perfiles de personajes publicados.":"Inicia sesión para ver las jugadoras y sus personajes."}</p>`; return;}
-      if(activeMessagesOwnerUid && !players.some(p=>p.ownerUid===activeMessagesOwnerUid)) activeMessagesOwnerUid="";
+      const players=groupMessagePlayers(); count.textContent=`${players.length} ${players.length===1?"personaje":"personajes"}`;
+      if(!players.length){strip.innerHTML=`<p class="messages-empty-strip">${state.user?"Todavía no hay perfiles de personajes publicados.":"Inicia sesión para ver tus personajes."}</p>`; return;}
+      if(activeMessagesCharacterId && !players.some(p=>p.characterId===activeMessagesCharacterId)) activeMessagesCharacterId="";
+      if(!activeMessagesCharacterId && players.length===1){activeMessagesCharacterId=players[0].characterId;activeMessagesOwnerUid=players[0].ownerUid;}
       strip.innerHTML=players.map(player=>{
-        const selected=player.ownerUid===activeMessagesOwnerUid;
+        const selected=player.characterId===activeMessagesCharacterId;
         const photo=safePhotoSrc(player.photo);
-        const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.label)}">`:escapeHtml((player.label||"?").charAt(0).toUpperCase());
-        const unread=(state.user?.uid===LEGACIES_ADMIN_UID)?(messagesUnread.byOwner?.[player.ownerUid]||0):messagesUnread.total||0;
-        return `<button type="button" class="messages-player-tab ${selected?"active":""}" onclick="selectMessagesPlayer('${escapeHtml(player.ownerUid)}')" aria-pressed="${selected}"><span class="messages-player-photo">${avatar}</span>${unread?`<span class="messages-unread-dot" title="${unread} mensajes sin leer"></span>`:""}<strong class="messages-player-name">${escapeHtml(player.label)}</strong><small class="messages-player-sub">${player.profiles.length} ${player.profiles.length===1?"personaje":"personajes"}</small></button>`;
+        const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.characterName)}">`:escapeHtml((player.characterName||"?").charAt(0).toUpperCase());
+        const unread=(messagesUnread.byCharacter?.[player.characterId]||0);
+        return `<button type="button" class="messages-player-tab ${selected?"active":""}" onclick="selectMessagesPlayer('${escapeHtml(player.characterId)}')" aria-pressed="${selected}"><span class="messages-player-photo">${avatar}</span>${unread?`<span class="messages-unread-dot" title="${unread} mensajes sin leer"></span>`:""}<strong class="messages-player-name">${escapeHtml(player.characterName)}</strong><small class="messages-player-sub">${escapeHtml(player.label)}</small></button>`;
       }).join("");
     }
     async function refreshMessagesUnread() {
       if(!state.user || !getScriptUrl()) return;
       try {
         const token=await getCurrentFirebaseIdToken();
-        const res=await apiPost({action:"getUnreadCounts",idToken:token,ownerUid:(state.user.uid===LEGACIES_ADMIN_UID?"":activeMessagesOwnerUid),channels:[]});
+        const res=await apiPost({action:"getUnreadCounts",idToken:token,ownerUid:activeMessagesOwnerUid,channels:[]});
         if(res&&res.ok) { messagesUnread=res.unread||messagesUnread; messagesUnread.total=Number(messagesUnread.privados||0); }
         const p=document.getElementById("messagesPrivadosBadge");
         if(p)p.innerHTML=messagesUnread.privados?`<span class="badge" style="background:#9E3F42;color:white;">${messagesUnread.privados}</span>`:"";
       } catch(e){console.warn("No se pudieron actualizar las notificaciones",e);}
     }
-    async function selectMessagesPlayer(ownerUid) {
-      activeMessagesOwnerUid=String(ownerUid||""); activeMessagesKind="privados";
+    async function selectMessagesPlayer(characterId) {
+      const selected=groupMessagePlayers().find(p=>p.characterId===String(characterId||""));
+      if(!selected)return;
+      activeMessagesCharacterId=selected.characterId;
+      activeMessagesOwnerUid=selected.ownerUid;
+      activeMessagesKind="privados";
       renderMessagesDirectory(); await renderMessagesConversation();
     }
     async function markMessagesRead(type,conversation,ownerUid="") {
       if(!state.user) return;
       try {
         const token=await getCurrentFirebaseIdToken();
-        await apiPost({action:"markMessagesRead",idToken:token,type,conversation,ownerUid});
+        await apiPost({action:"markMessagesRead",idToken:token,type,conversation,ownerUid,characterId:activeMessagesCharacterId});
       } catch(e){console.warn("No se pudo marcar como leído",e);}
     }
     let activeMessagesNpcId = "direccion";
@@ -1012,16 +1022,17 @@
       const empty=document.getElementById("messagesEmptyState"), view=document.getElementById("messagesConversationView"), identity=document.getElementById("messagesSelectedIdentity"), content=document.getElementById("messagesConversationContent"), strip=document.getElementById("messagesNpcStrip");
       if(!empty||!view||!identity||!content||!strip)return;
       const admin=state.user?.uid===LEGACIES_ADMIN_UID;
-      const player=groupMessagePlayers().find(p=>p.ownerUid===activeMessagesOwnerUid);
+      const player=groupMessagePlayers().find(p=>p.characterId===activeMessagesCharacterId);
       if(!player){empty.style.display="flex";view.style.display="none";strip.innerHTML="";return;}
+      activeMessagesOwnerUid=player.ownerUid;
       empty.style.display="none";view.style.display="block";
-      const photo=safePhotoSrc(player.photo); const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.label)}">`:escapeHtml((player.label||"?").charAt(0).toUpperCase());
-      identity.innerHTML=`<span class="messages-player-photo">${avatar}</span><span><strong>${escapeHtml(player.label)}</strong><small>${player.profiles.map(p=>escapeHtml(p.name||"Personaje")).join(" · ")}</small></span>`;
+      const photo=safePhotoSrc(player.photo); const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.characterName)}">`:escapeHtml((player.characterName||"?").charAt(0).toUpperCase());
+      identity.innerHTML=`<span class="messages-player-photo">${avatar}</span><span><strong>${escapeHtml(player.characterName)}</strong><small>${escapeHtml(player.label)}</small></span>`;
       content.innerHTML='<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Cargando conversaciones privadas…</p>';
       try {
         const token=await getCurrentFirebaseIdToken(); if(!token) throw new Error("Inicia sesión para consultar tus mensajes.");
-        if(admin){const legacyMap=[];(state.playerProfiles||[]).forEach(profile=>{if(profile.ownerUid&&profile.name)legacyMap.push({playerName:profile.name,ownerUid:profile.ownerUid});});await apiPost({action:"migratePrivateChatOwners",idToken:token,mapping:legacyMap});}
-        const res=await apiPost({action:"getPrivateChat",idToken:token,ownerUid:player.ownerUid}); if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudieron cargar los mensajes.");
+        const res=await apiPost({action:"getPrivateChat",idToken:token,ownerUid:player.ownerUid,characterId:player.characterId,characterName:player.characterName});
+        if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudieron cargar los mensajes.");
         const messages=Array.isArray(res.messages)?res.messages:[];
         const npcDirectory=messagesNpcDirectory();
         messages.forEach(m=>{const id=String(m.npcId||"direccion");if(!npcDirectory.some(n=>n.id===id))npcDirectory.push({id,name:m.npcName||"Personaje",photo:"",type:"NPC"});});
@@ -1035,9 +1046,8 @@
         }).join("");
         const selectedNpc=npcDirectory.find(n=>n.id===activeMessagesNpcId)||npcDirectory[0];
         const thread=messages.filter(m=>String(m.npcId||"direccion")===activeMessagesNpcId);
-        const threadHtml=thread.length?thread.map(m=>`<div class="chat-msg ${m.senderType==='character'?'from-char':''}" style="margin:.45rem 0;"><div class="chat-msg-head"><strong>${escapeHtml(m.senderType==='character'?m.npcName:(m.playerName||player.label))}</strong><span class="meta-date">${escapeHtml(m.timestamp||"")}</span></div><p style="white-space:pre-wrap;">${escapeHtml(m.message||"")}</p></div>`).join(""):`<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Todavía no hay mensajes con ${escapeHtml(selectedNpc.name)}. ¡Puedes iniciar la conversación!</p>`;
-        const npcOptions=(state.npcs||[]).map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join("");
-        content.innerHTML=`<div style="margin-bottom:.5rem;color:var(--ink-muted);font-size:.82rem;">Conversación con <strong style="color:var(--ink-dark);">${escapeHtml(selectedNpc.name)}</strong></div><div style="max-height:440px;overflow:auto;padding:.3rem;">${threadHtml}</div><div style="display:grid;grid-template-columns:1fr;gap:.55rem;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);">${admin?`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Responder como personaje</label>`:`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Enviar mensaje a ${escapeHtml(selectedNpc.name)}</label>`}<textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…"></textarea><button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.label)}','${escapeHtml(activeMessagesNpcId)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button></div>`;
+        const threadHtml=thread.length?thread.map(m=>`<div class="chat-msg ${m.senderType==='character'?'from-char':''}" style="margin:.45rem 0;"><div class="chat-msg-head"><strong>${escapeHtml(m.senderType==='character'?m.npcName:(m.playerName||player.characterName))}</strong><span class="meta-date">${escapeHtml(m.timestamp||"")}</span></div><p style="white-space:pre-wrap;">${escapeHtml(m.message||"")}</p></div>`).join(""):`<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Todavía no hay mensajes entre ${escapeHtml(player.characterName)} y ${escapeHtml(selectedNpc.name)}. ¡Puedes iniciar la conversación!</p>`;
+        content.innerHTML=`<div style="margin-bottom:.5rem;color:var(--ink-muted);font-size:.82rem;">Conversación de <strong style="color:var(--ink-dark);">${escapeHtml(player.characterName)}</strong> con <strong style="color:var(--ink-dark);">${escapeHtml(selectedNpc.name)}</strong></div><div style="max-height:440px;overflow:auto;padding:.3rem;">${threadHtml}</div><div style="display:grid;grid-template-columns:1fr;gap:.55rem;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);">${admin?`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Responder como personaje</label>`:`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Enviar mensaje a ${escapeHtml(selectedNpc.name)} como ${escapeHtml(player.characterName)}</label>`}<textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…"></textarea><button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button></div>`;
         if(thread.length) await markMessagesRead("private",activeMessagesNpcId,player.ownerUid);
         await refreshMessagesUnread(); renderMessagesDirectory();
       } catch(e){content.innerHTML=`<p style="color:#8b2635;padding:1rem;">${escapeHtml(e.message)}</p>`;}
@@ -1075,7 +1085,7 @@
     async function sendMessageGroup(id){const input=document.getElementById("msgGroupText"),message=input?.value.trim();if(!message){showToast("Escribe un mensaje.");return;}const npcId=document.getElementById("msgGroupNpc")?.value||"";try{const token=await getCurrentFirebaseIdToken();const res=await apiPost({action:"sendMessageGroup",idToken:token,groupId:id,message,npcId});if(!res.ok)throw new Error(res.error||"No se pudo enviar.");await openMessageGroup(id);}catch(e){showToast(e.message);}}
 
     async function getCurrentFirebaseIdToken(){ const current=legaciesAuth && legaciesAuth.currentUser; return current ? await current.getIdToken() : ""; }
-    async function sendMessagesPrivate(ownerUid,playerLabel,npcId){
+    async function sendMessagesPrivate(ownerUid,playerLabel,npcId,characterId=activeMessagesCharacterId){
       const input=document.getElementById("messagesPrivateInput"), message=input?input.value.trim():"";
       if(!message){showToast("Escribe un mensaje antes de enviarlo.");return;}
       const isAdmin=state.user && state.user.uid===LEGACIES_ADMIN_UID;
@@ -1084,7 +1094,7 @@
       const targetName=npc?npc.name:"Dirección";
       const token=await getCurrentFirebaseIdToken();
       try{
-        const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,senderType:isAdmin?"character":"player",message});
+        const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,characterId,senderType:isAdmin?"character":"player",message});
         if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudo enviar.");
         await renderMessagesConversation(); showToast("Mensaje enviado.");
       }catch(e){showToast(e.message);}
@@ -1661,7 +1671,9 @@
       if(!ownerUid){showToast("No se encontró la cuenta asociada a este personaje.");return;}
       window.legaciesPendingMessageTarget={id:targetId,name:targetName};
       activeMessagesNpcId=targetId;
-      activeMessagesOwnerUid=ownerUid; activeMessagesKind="privados";
+      activeMessagesOwnerUid=ownerUid;
+      activeMessagesCharacterId=isPlayerProfileId(id)?String((state.playerProfiles||[]).find(x=>x.id===id)?.publicId||id):String((state.playerProfiles||[]).find(x=>x.ownerUid===ownerUid)?.publicId||(state.playerProfiles||[]).find(x=>x.ownerUid===ownerUid)?.id||"");
+      activeMessagesKind="privados";
       closeProfileModal(); navigateTo("mensajes");
       await renderMessagesConversation();
     }
