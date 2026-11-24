@@ -846,8 +846,9 @@ body.messages-mode footer { display:none !important; }
 
     function renderMessagesDirectory() {
       const strip=document.getElementById("messagesPlayerStrip"), count=document.getElementById("messagesPlayerCount");
-      if(!strip||!count)return;
-      const players=groupMessagePlayers(); count.textContent=`${players.length} ${players.length===1?"personaje":"personajes"}`;
+      if(!strip)return;
+      const players=groupMessagePlayers();
+      if(count) count.textContent=`${players.length} ${players.length===1?"personaje":"personajes"}`;
       if(!players.length){strip.innerHTML='<p class="messages-empty-strip">Todavía no hay personajes publicados para mostrar.</p>'; return;}
       if(activeMessagesCharacterId && !players.some(p=>p.characterId===activeMessagesCharacterId)) activeMessagesCharacterId="";
       if(!activeMessagesCharacterId && players.length===1){activeMessagesCharacterId=players[0].characterId;activeMessagesOwnerUid=players[0].ownerUid;}
