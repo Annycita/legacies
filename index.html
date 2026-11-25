@@ -616,7 +616,11 @@ body.messages-mode footer { display:none !important; }
 
 /* Conversaciones privadas: burbujas tipo WhatsApp y compositor estable */
 #view-mensajes .messages-private-conversation-title{padding:.2rem 0 .8rem;color:var(--ink-muted);font-size:.82rem}
-#view-mensajes .messages-private-thread{display:flex;flex-direction:column;gap:.7rem;min-height:180px;padding:.35rem .15rem 1rem}
+#view-mensajes .messages-private-thread{display:flex;flex-direction:column;gap:.7rem;height:clamp(240px,48vh,460px);min-height:180px;overflow-y:scroll;overflow-x:hidden;overscroll-behavior:contain;padding:.55rem .65rem 1rem;border:1px solid rgba(198,154,60,.28);border-radius:12px;background:rgba(255,255,255,.22);scrollbar-width:thin;scrollbar-color:#b58a35 rgba(53,27,69,.10)}
+#view-mensajes .messages-private-thread::-webkit-scrollbar{width:10px}
+#view-mensajes .messages-private-thread::-webkit-scrollbar-track{background:rgba(53,27,69,.10);border-radius:10px}
+#view-mensajes .messages-private-thread::-webkit-scrollbar-thumb{background:#b58a35;border:2px solid rgba(251,245,233,.95);border-radius:10px}
+#view-mensajes .messages-private-thread::-webkit-scrollbar-thumb:hover{background:#8d6826}
 #view-mensajes .private-message-row{display:flex;align-items:flex-end;gap:.5rem;width:100%}
 #view-mensajes .private-message-row.is-own{justify-content:flex-end}
 #view-mensajes .private-message-row.is-received{justify-content:flex-start}
@@ -630,9 +634,11 @@ body.messages-mode footer { display:none !important; }
 #view-mensajes .private-message-meta span{font-family:Montserrat,sans-serif;font-size:.6rem;white-space:nowrap}
 #view-mensajes .private-message-bubble p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
 #view-mensajes .messages-private-empty{width:100%;padding:2rem 1rem;text-align:center;color:var(--ink-muted)}
-#view-mensajes .messages-private-composer{position:sticky;bottom:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.65rem;align-items:end;padding:.85rem 0 .25rem;background:rgba(251,245,233,.98);border-top:1px solid rgba(198,154,60,.4)}
-#view-mensajes .messages-private-composer textarea{min-height:52px;max-height:150px;resize:vertical}
+#view-mensajes .messages-private-composer{position:sticky;bottom:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.65rem;align-items:end;width:100%;box-sizing:border-box;padding:.85rem 0 .25rem;background:rgba(251,245,233,.98);border-top:1px solid rgba(198,154,60,.4)}
+#view-mensajes .messages-private-composer textarea{display:block;width:100%;min-width:0;min-height:58px;max-height:150px;resize:vertical;box-sizing:border-box}
 #view-mensajes .messages-private-composer button{min-height:48px;white-space:nowrap}
+#view-mensajes .messages-private-composer label{display:none!important}
+#view-mensajes .messages-conversation-content{width:100%;min-width:0}
 @media(max-width:600px){#view-mensajes .messages-private-composer{grid-template-columns:1fr}#view-mensajes .messages-private-composer button{width:100%}#view-mensajes .private-message-bubble{max-width:88%}}
 
 /* v48 · Distribución tipo WhatsApp Web, con identidad Rosewood */
@@ -976,13 +982,16 @@ body.messages-mode footer { display:none !important; }
         const threadList=document.getElementById("messagesPrivateThread");
         const threadHtml=renderPrivateThreadMessages(thread,player,selectedNpc,admin);
         if(threadList) {
+          const wasNearBottom = threadList.scrollHeight - threadList.scrollTop - threadList.clientHeight < 90;
+          const previousTop = threadList.scrollTop;
           threadList.innerHTML=threadHtml;
+          threadList.scrollTop = wasNearBottom ? threadList.scrollHeight : previousTop;
         } else {
           content.innerHTML=`<div class="messages-private-conversation-title">Conversación de <strong>${escapeHtml(player.characterName)}</strong> con <strong>${escapeHtml(selectedNpc.name)}</strong></div>
             <div id="messagesPrivateThread" class="messages-private-thread">${threadHtml}</div>
             <div class="messages-private-composer">
               <textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…" onkeydown="handleMessagesPrivateEnter(event,'${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')"></textarea>
-              <button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button>
+              <button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')">Enviar mensaje</button>
             </div>`;
         }
         if(thread.length) await markMessagesRead("private",activeMessagesNpcId,player.ownerUid);
