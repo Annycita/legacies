@@ -613,6 +613,28 @@ body.messages-mode footer { display:none !important; }
 @media(max-width:520px){#view-mensajes .messages-app{grid-template-columns:76px minmax(0,1fr)}#view-mensajes .messages-sidebar-heading{justify-content:center;padding:.4rem}#view-mensajes .messages-sidebar-heading>div{display:none}#view-mensajes .messages-sidebar-label{font-size:.5rem;text-align:center;padding:.55rem .1rem}#view-mensajes .messages-npc-sidebar .messages-npc-tab{justify-content:center;padding:.35rem .1rem;min-height:52px}#view-mensajes .messages-npc-sidebar .messages-npc-photo{width:38px;height:38px;flex-basis:38px}#view-mensajes .messages-npc-sidebar .messages-npc-name{display:none}#view-mensajes .messages-sidebar-groups{max-height:24%;min-height:80px}#view-mensajes .messages-groups-heading{justify-content:center}#view-mensajes .messages-player-area{padding:.25rem .45rem}#view-mensajes .messages-player-tab{min-width:58px;flex-basis:58px;min-height:64px}#view-mensajes .messages-player-photo{width:36px;height:36px;flex-basis:36px}#view-mensajes .messages-player-name{font-size:.65rem}#view-mensajes .messages-main-topbar{min-height:54px}}
 
 
+
+/* Conversaciones privadas: burbujas tipo WhatsApp y compositor estable */
+#view-mensajes .messages-private-conversation-title{padding:.2rem 0 .8rem;color:var(--ink-muted);font-size:.82rem}
+#view-mensajes .messages-private-thread{display:flex;flex-direction:column;gap:.7rem;min-height:180px;padding:.35rem .15rem 1rem}
+#view-mensajes .private-message-row{display:flex;align-items:flex-end;gap:.5rem;width:100%}
+#view-mensajes .private-message-row.is-own{justify-content:flex-end}
+#view-mensajes .private-message-row.is-received{justify-content:flex-start}
+#view-mensajes .private-message-avatar{width:34px;height:34px;flex:0 0 34px;overflow:hidden;border-radius:50%;border:1.5px solid var(--gold);background:var(--bg-secondary);color:var(--text-light);display:grid;place-items:center;font-family:Cinzel,serif}
+#view-mensajes .private-message-avatar img{width:100%;height:100%;object-fit:cover}
+#view-mensajes .private-message-bubble{max-width:min(76%,650px);padding:.65rem .85rem;border:1px solid rgba(198,154,60,.35);border-radius:13px;background:#fffdf8;box-shadow:0 2px 7px rgba(36,16,47,.06)}
+#view-mensajes .private-message-row.is-own .private-message-bubble{background:#eee5f2;border-color:#cbb8d5;border-bottom-right-radius:4px}
+#view-mensajes .private-message-row.is-received .private-message-bubble{border-bottom-left-radius:4px}
+#view-mensajes .private-message-meta{display:flex;align-items:center;gap:.8rem;justify-content:space-between;margin-bottom:.22rem;color:var(--ink-muted);font-size:.7rem}
+#view-mensajes .private-message-meta strong{font-family:Cinzel,serif;color:var(--ink-dark);font-size:.72rem}
+#view-mensajes .private-message-meta span{font-family:Montserrat,sans-serif;font-size:.6rem;white-space:nowrap}
+#view-mensajes .private-message-bubble p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.45}
+#view-mensajes .messages-private-empty{width:100%;padding:2rem 1rem;text-align:center;color:var(--ink-muted)}
+#view-mensajes .messages-private-composer{position:sticky;bottom:0;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:.65rem;align-items:end;padding:.85rem 0 .25rem;background:rgba(251,245,233,.98);border-top:1px solid rgba(198,154,60,.4)}
+#view-mensajes .messages-private-composer textarea{min-height:52px;max-height:150px;resize:vertical}
+#view-mensajes .messages-private-composer button{min-height:48px;white-space:nowrap}
+@media(max-width:600px){#view-mensajes .messages-private-composer{grid-template-columns:1fr}#view-mensajes .messages-private-composer button{width:100%}#view-mensajes .private-message-bubble{max-width:88%}}
+
 /* v48 · Distribución tipo WhatsApp Web, con identidad Rosewood */
 body.messages-mode { overflow:hidden !important; }
 body.messages-mode > header.navbar { display:none !important; }
@@ -901,6 +923,24 @@ body.messages-mode footer { display:none !important; }
       activeMessagesNpcId=String(npcId||"direccion");
       renderMessagesConversation();
     }
+    function renderPrivateThreadMessages(thread, player, selectedNpc, admin) {
+      const threadHtml = thread.length ? thread.map(m => {
+        const ownMessage = admin ? m.senderType === "character" : m.senderType === "player";
+        const senderName = m.senderType === "character" ? (m.npcName || selectedNpc.name) : (m.playerName || player.characterName);
+        const senderPhoto = m.senderType === "character" ? selectedNpc.photo : player.photo;
+        const photo = safePhotoSrc(senderPhoto);
+        const avatar = photo ? `<img src="${escapeHtml(photo)}" alt="${escapeHtml(senderName)}">` : escapeHtml((senderName || "?").charAt(0).toUpperCase());
+        return `<div class="private-message-row ${ownMessage ? "is-own" : "is-received"}">
+          ${!ownMessage ? `<span class="private-message-avatar">${avatar}</span>` : ""}
+          <div class="private-message-bubble">
+            <div class="private-message-meta"><strong>${escapeHtml(senderName)}</strong><span>${escapeHtml(m.timestamp || "")}</span></div>
+            <p>${escapeHtml(m.message || "")}</p>
+          </div>
+        </div>`;
+      }).join("") : `<p class="messages-private-empty">Todavía no hay mensajes entre ${escapeHtml(player.characterName)} y ${escapeHtml(selectedNpc.name)}. ¡Puedes iniciar la conversación!</p>`;
+      return threadHtml;
+    }
+
     async function renderMessagesConversation() {
       const empty=document.getElementById("messagesEmptyState"), view=document.getElementById("messagesConversationView"), identity=document.getElementById("messagesSelectedIdentity"), content=document.getElementById("messagesConversationContent"), strip=document.getElementById("messagesNpcStrip");
       if(!empty||!view||!identity||!content||!strip)return;
@@ -916,7 +956,6 @@ body.messages-mode footer { display:none !important; }
       empty.style.display="none";view.style.display="block";
       const photo=safePhotoSrc(player.photo); const avatar=photo?`<img src="${escapeHtml(photo)}" alt="${escapeHtml(player.characterName)}">`:escapeHtml((player.characterName||"?").charAt(0).toUpperCase());
       identity.innerHTML=`<span class="messages-player-photo">${avatar}</span><span><strong>${escapeHtml(player.characterName)}</strong><small>${escapeHtml(player.label)}</small></span>`;
-      content.innerHTML='<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Cargando conversaciones privadas…</p>';
       try {
         const token=await getCurrentFirebaseIdToken(); if(!token) throw new Error("Inicia sesión para consultar tus mensajes.");
         const res=await apiPost({action:"getPrivateChat",idToken:token,ownerUid:player.ownerUid,characterId:player.characterId,characterName:player.characterName});
@@ -934,12 +973,34 @@ body.messages-mode footer { display:none !important; }
         }).join("");
         const selectedNpc=npcDirectory.find(n=>n.id===activeMessagesNpcId)||npcDirectory[0];
         const thread=messages.filter(m=>String(m.npcId||"direccion")===activeMessagesNpcId);
-        const threadHtml=thread.length?thread.map(m=>`<div class="chat-msg ${m.senderType==='character'?'from-char':''}" style="margin:.45rem 0;"><div class="chat-msg-head"><strong>${escapeHtml(m.senderType==='character'?m.npcName:(m.playerName||player.characterName))}</strong><span class="meta-date">${escapeHtml(m.timestamp||"")}</span></div><p style="white-space:pre-wrap;">${escapeHtml(m.message||"")}</p></div>`).join(""):`<p style="text-align:center;color:var(--ink-muted);padding:1.5rem;">Todavía no hay mensajes entre ${escapeHtml(player.characterName)} y ${escapeHtml(selectedNpc.name)}. ¡Puedes iniciar la conversación!</p>`;
-        content.innerHTML=`<div style="margin-bottom:.5rem;color:var(--ink-muted);font-size:.82rem;">Conversación de <strong style="color:var(--ink-dark);">${escapeHtml(player.characterName)}</strong> con <strong style="color:var(--ink-dark);">${escapeHtml(selectedNpc.name)}</strong></div><div style="max-height:440px;overflow:auto;padding:.3rem;">${threadHtml}</div><div style="display:grid;grid-template-columns:1fr;gap:.55rem;margin-top:.8rem;padding-top:.8rem;border-top:1px solid rgba(198,154,60,.35);">${admin?`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Responder como personaje</label>`:`<label class="font-meta" style="font-size:.76rem;font-weight:600;">Enviar mensaje a ${escapeHtml(selectedNpc.name)} como ${escapeHtml(player.characterName)}</label>`}<textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…"></textarea><button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button></div>`;
+        const threadList=document.getElementById("messagesPrivateThread");
+        const threadHtml=renderPrivateThreadMessages(thread,player,selectedNpc,admin);
+        if(threadList) {
+          threadList.innerHTML=threadHtml;
+        } else {
+          content.innerHTML=`<div class="messages-private-conversation-title">Conversación de <strong>${escapeHtml(player.characterName)}</strong> con <strong>${escapeHtml(selectedNpc.name)}</strong></div>
+            <div id="messagesPrivateThread" class="messages-private-thread">${threadHtml}</div>
+            <div class="messages-private-composer">
+              <textarea id="messagesPrivateInput" class="form-control" rows="2" maxlength="600" placeholder="Escribe un mensaje…" onkeydown="handleMessagesPrivateEnter(event,'${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')"></textarea>
+              <button class="btn-primary-arcane" onclick="sendMessagesPrivate('${escapeHtml(player.ownerUid)}','${escapeHtml(player.characterName)}','${escapeHtml(activeMessagesNpcId)}','${escapeHtml(player.characterId)}')">${admin?"Enviar respuesta":"Enviar mensaje"}</button>
+            </div>`;
+        }
         if(thread.length) await markMessagesRead("private",activeMessagesNpcId,player.ownerUid);
         await refreshMessagesUnread(); renderMessagesDirectory();
-      } catch(e){content.innerHTML=`<p style="color:#8b2635;padding:1rem;">${escapeHtml(e.message)}</p>`;}
+      } catch(e){
+        const existingThread=document.getElementById("messagesPrivateThread");
+        if(existingThread) existingThread.innerHTML=`<p style="color:#8b2635;padding:1rem;">${escapeHtml(e.message)}</p>`;
+        else content.innerHTML=`<p style="color:#8b2635;padding:1rem;">${escapeHtml(e.message)}</p>`;
+      }
     }
+
+    function handleMessagesPrivateEnter(event,ownerUid,playerLabel,npcId,characterId) {
+      if(event.key==="Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessagesPrivate(ownerUid,playerLabel,npcId,characterId);
+      }
+    }
+
     let activeMessageGroupId="";
     function openCreateMessageGroup(){
       if(!state.user || state.user.uid!==LEGACIES_ADMIN_UID){showToast("Solo Dirección puede gestionar los chats grupales.");return;}
@@ -980,11 +1041,13 @@ body.messages-mode footer { display:none !important; }
       const selectedNpcId=String(npcId||activeMessagesNpcId||"direccion");
       const npc=(state.npcs||[]).find(n=>String(n.id)===selectedNpcId);
       const targetName=npc?npc.name:"Dirección";
-      const token=await getCurrentFirebaseIdToken();
-      try{
+      try {
+        const token=await getCurrentFirebaseIdToken();
         const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,characterId,senderType:isAdmin?"character":"player",message});
         if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudo enviar.");
-        await renderMessagesConversation(); showToast("Mensaje enviado.");
+        if(input && input.value.trim()===message) input.value="";
+        await renderMessagesConversation();
+        showToast("Mensaje enviado.");
       }catch(e){showToast(e.message);}
     }
 
