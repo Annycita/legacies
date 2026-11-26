@@ -2940,13 +2940,25 @@ body.messages-mode footer { display:none !important; }
           const npc = (state.npcs || []).find(n => String(n.id) === npcId);
           if (!npc) continue;
           const actor = { id:`npc_${npc.id}`, name:npc.name || "NPC", photo:npc.photo || "", kind:"npc" };
-          await socialPostRef(postKey).collection("likes").doc(actor.id).set({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", createdAt:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true });
-          heartsDone++;
+          const likePath = `${SOCIAL_INTERACTIONS}/${postKey}/likes/${actor.id}`;
+          try {
+            await socialPostRef(postKey).collection("likes").doc(actor.id).set({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", createdAt:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true });
+            heartsDone++;
+          } catch (likeError) {
+            console.error("LEGACIES social NPC like rejected:", { operation:"like", path:likePath, actorId:actor.id, actorType:"npc", project:firebase.app().options.projectId, uid:state.user?.uid, errorCode:likeError.code, errorMessage:likeError.message });
+            throw new Error(`Falló el CORAZÓN de ${actor.name}. Ruta: ${likePath}. Código: ${likeError.code || "sin código"}. ${likeError.message || ""}`);
+          }
           const commentField = panel.querySelector(`[data-social-npc-comment="${CSS.escape(npcId)}"]`);
           const comment = commentField ? commentField.value.trim() : "";
           if (comment) {
-            await socialPostRef(postKey).collection("comments").add({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", text:comment, timestamp:new Date().toLocaleString("es-PE"), createdAt:firebase.firestore.FieldValue.serverTimestamp() });
-            commentsDone++;
+            const commentPath = `${SOCIAL_INTERACTIONS}/${postKey}/comments`;
+            try {
+              await socialPostRef(postKey).collection("comments").add({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", text:comment, timestamp:new Date().toLocaleString("es-PE"), createdAt:firebase.firestore.FieldValue.serverTimestamp() });
+              commentsDone++;
+            } catch (commentError) {
+              console.error("LEGACIES social NPC comment rejected:", { operation:"comment", path:commentPath, actorId:actor.id, actorType:"npc", textLength:comment.length, project:firebase.app().options.projectId, uid:state.user?.uid, errorCode:commentError.code, errorMessage:commentError.message });
+              throw new Error(`El CORAZÓN de ${actor.name} sí se publicó, pero falló su COMENTARIO. Ruta: ${commentPath}. Código: ${commentError.code || "sin código"}. ${commentError.message || ""}`);
+            }
           }
         }
         await refreshSocialPost(postKey);
