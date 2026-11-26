@@ -1248,19 +1248,45 @@ body.messages-mode footer { display:none !important; }
     async function sendMessagesPrivate(ownerUid,playerLabel,npcId,characterId=activeMessagesCharacterId){
       const input=document.getElementById("messagesPrivateInput"), message=input?input.value.trim():"";
       if(!message){showToast("Escribe un mensaje antes de enviarlo.");return;}
+      const composer=input?.closest(".messages-private-composer");
+      const button=composer?.querySelector("button");
+      if(button?.disabled)return;
       const isAdmin=state.user && state.user.uid===LEGACIES_ADMIN_UID;
       const selectedNpcId=String(npcId||activeMessagesNpcId||"direccion");
       const npc=(state.npcs||[]).find(n=>String(n.id)===selectedNpcId);
       const targetName=npc?npc.name:"Dirección";
+      if(button)button.disabled=true;
       try {
         const token=await getCurrentFirebaseIdToken();
-        const res=await apiPost({action:"sendPrivateChat",idToken:token,ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,characterId,senderType:isAdmin?"character":"player",message});
-        if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudo enviar.");
-        if(input && input.value.trim()===message) input.value="";
-        messagesPrivateCache.delete(`${ownerUid}:${characterId}`);
+        if(!token)throw new Error("Tu sesión no está activa. Vuelve a iniciar sesión e inténtalo otra vez.");
+        const payload={action:"sendPrivateChat",idToken:token,ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,characterId,senderType:isAdmin?"character":"player",message};
+        const res=await apiPost(payload);
+        if(!res||!res.ok)throw new Error((res&&res.error)||"No se pudo enviar el mensaje. Inténtalo de nuevo.");
+
+        // Mostrar el mensaje confirmado inmediatamente, sin depender de una segunda
+        // consulta que podría devolver datos antiguos o tardar en actualizarse.
+        const cacheKey=`${ownerUid}:${characterId}`;
+        const previous=messagesPrivateCache.get(cacheKey);
+        const currentMessages=Array.isArray(previous?.messages)?previous.messages.slice():[];
+        const savedMessage=res.msg || res.message || {
+          ownerUid,npcId:selectedNpcId,npcName:targetName,playerName:playerLabel,
+          characterId,senderType:payload.senderType,message,
+          timestamp:new Date().toLocaleString("es-PE")
+        };
+        const alreadyPresent=currentMessages.some(m=>
+          (savedMessage.id && m.id===savedMessage.id) ||
+          (m.message===savedMessage.message && m.timestamp===savedMessage.timestamp && m.senderType===savedMessage.senderType)
+        );
+        if(!alreadyPresent)currentMessages.push(savedMessage);
+        messagesPrivateCache.set(cacheKey,{messages:currentMessages,savedAt:Date.now()});
+        if(input && input.value.trim()===message)input.value="";
         await renderMessagesConversation();
         showToast("Mensaje enviado.");
-      }catch(e){showToast(e.message);}
+      }catch(e){
+        showToast(e.message||"No se pudo enviar el mensaje.");
+      }finally{
+        if(button)button.disabled=false;
+      }
     }
 
     function navigateTo(view, houseId = null) {
