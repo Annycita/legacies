@@ -2860,13 +2860,20 @@ body.messages-mode footer { display:none !important; }
       return { id:`player_${state.user.uid}_${character.id}`, name:profile?.name || character.name || "Estudiante", photo:profile?.photo || character.photo || "", kind:"player", characterId:character.id };
     }
     function socialPostRef(postKey) { return legaciesDb.collection(SOCIAL_INTERACTIONS).doc(String(postKey)); }
+    async function copySocialFirebaseDiagnostic() {
+      const uid = state.user?.uid || "sin sesión";
+      const projectId = firebase.app().options.projectId || "desconocido";
+      const report = `LEGACIES Firebase diagnostic\nProject: ${projectId}\nSession UID: ${uid}\nExpected admin UID: ${LEGACIES_ADMIN_UID}\nRecognized as admin: ${isAdminUid() ? "YES" : "NO"}`;
+      try { await navigator.clipboard.writeText(report); showToast("Diagnóstico copiado. Puedes enviármelo aquí."); }
+      catch (e) { console.log(report); showToast("No se pudo copiar. El diagnóstico quedó en la consola (F12)."); }
+    }
     async function loadSocialFeed() {
       const token = ++socialFeedLoadToken;
       const feed = document.getElementById("socialFeed");
       const toolbar = document.getElementById("socialFeedToolbar");
       if (!feed || !toolbar) return;
       toolbar.innerHTML = state.user ? (isAdminUid()
-        ? `<div class="card" style="box-shadow:none;padding:.8rem 1rem;font-size:.88rem;">Interactúas como <strong>Dirección de Rosewood</strong>. Para activar NPCs en una publicación, utiliza el panel «Activar NPC» de esa publicación.</div>`
+        ? `<div class="card" style="box-shadow:none;padding:.8rem 1rem;font-size:.88rem;">Interactúas como <strong>Dirección de Rosewood</strong>. Para activar NPCs en una publicación, utiliza el panel «Activar NPC» de esa publicación.<details style="margin-top:.65rem;font-size:.8rem;"><summary style="cursor:pointer;color:#6b4b75;font-weight:700;">Diagnóstico de Firebase (si falla una interacción)</summary><div style="display:grid;gap:.3rem;margin-top:.55rem;overflow-wrap:anywhere;"><div><strong>Proyecto:</strong> <code>${escapeHtml(firebase.app().options.projectId || "desconocido")}</code></div><div><strong>UID de sesión:</strong> <code id="socialDebugUid">${escapeHtml(state.user?.uid || "sin sesión")}</code></div><div><strong>UID de Dirección esperado:</strong> <code>${LEGACIES_ADMIN_UID}</code></div><div><strong>¿Reconocida como Dirección?:</strong> <span id="socialDebugAdmin">${isAdminUid() ? "Sí" : "No"}</span></div><button type="button" class="btn-outline-gold" style="justify-self:start;color:var(--ink-dark);margin-top:.25rem;" onclick="copySocialFirebaseDiagnostic()">Copiar diagnóstico</button></div></details></div>`
         : `<div class="card" style="box-shadow:none;padding:.75rem 1rem;font-size:.88rem;">Interactúas como <strong>${escapeHtml(socialActorContext()?.name || "tu personaje")}</strong>. Puedes cambiar tu personaje activo desde «Mis personajes».</div>`)
         : `<div class="card" style="box-shadow:none;text-align:center;">Inicia sesión para dar corazones y comentar las publicaciones.</div>`;
       const actorSelect = document.getElementById("socialNpcActor");
@@ -2950,7 +2957,7 @@ body.messages-mode footer { display:none !important; }
         renderSocialNpcCommentFields(panel.querySelector(".social-npc-select"));
       } catch (e) {
         console.error("Error al activar NPCs en publicaciones:", e);
-        showToast(`Se publicaron ${heartsDone} corazón(es) y ${commentsDone} comentario(s). Falló el resto: ${e.code || e.message || "error de Firestore"}`);
+        showToast(`Se publicaron ${heartsDone} corazón(es) y ${commentsDone} comentario(s). Error: ${e.code || "Firestore"}. ${e.message || "Revisa permisos y UID de Dirección."}`);
         await refreshSocialPost(postKey);
       } finally { button.disabled = false; }
     }
