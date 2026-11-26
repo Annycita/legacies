@@ -877,7 +877,7 @@ body.messages-mode footer { display:none !important; }
       boardDesc: "Comunicados oficiales de la Dirección de Rosewood, misiones vigentes, torneos y convocatorias.",
       oracleDesc: "Canaliza el destino de tu personaje. Las tiradas quedan selladas en el archivo público de Rosewood.",
       housesDesc: "Cada residencia de Rosewood custodia un animal emblema, instalaciones propias y uniformes tradicionales. Solo sus integrantes pueden acceder a su interior.",
-      npcDesc: "Haz clic en cualquier perfil para consultar su ficha, sus publicaciones o escribirle por chat privado.",
+      npcDesc: "Haz clic en cualquier perfil para consultar su ficha y sus publicaciones.",
       chronDesc: "Registro vivo de los acontecimientos históricos y capítulos memorables de Academia Rosewood.",
       chatDesc: "Comunícate en tiempo real con otros estudiantes de Rosewood, narra escenas o coordina partidas."
     };
@@ -1034,7 +1034,7 @@ body.messages-mode footer { display:none !important; }
             <div class="npc-dorm-kicker">${escapeHtml(house)} · ${type}</div>
             <h3>${escapeHtml(profile.name)}</h3>
             <div class="npc-dorm-field"><strong>Clase / Cargo</strong><br>${escapeHtml(role)}</div>
-            <div class="npc-dorm-footer"><span>Ver perfil y chat privado</span><span class="npc-dorm-seal">${seal}　→</span></div>
+            <div class="npc-dorm-footer"><span>Ver perfil del personaje</span><span class="npc-dorm-seal">${seal}　→</span></div>
           </div>
         </article>`;
       }).join("");
@@ -1877,7 +1877,7 @@ body.messages-mode footer { display:none !important; }
             <h3>${escapeHtml(n.name)}</h3>
             <div class="npc-dorm-field"><strong>${type === "Estudiante" ? "Clase / Cargo" : "Asignatura / Cargo"}</strong><br>${escapeHtml(role)}</div>
             ${description ? `<p class="npc-dorm-description">${escapeHtml(description)}</p>` : ""}
-            <div class="npc-dorm-footer"><span>Ver perfil y chat privado</span><span class="npc-dorm-seal">${seal}　→</span></div>
+            <div class="npc-dorm-footer"><span>Ver perfil del personaje</span><span class="npc-dorm-seal">${seal}　→</span></div>
           </div>
         </article>`;
       }).join("");
@@ -1887,11 +1887,9 @@ body.messages-mode footer { display:none !important; }
       state.activeProfileId = npcId; state.activeProfileTab = "sheet";
       document.getElementById("profileModal").classList.add("open");
       document.querySelectorAll("#profileModal .filter-chip").forEach(b => b.classList.remove("active"));
-      document.getElementById("profTabBtn-affinity").style.display="inline-flex"; document.getElementById("profTabBtn-pm").style.display="inline-flex"; document.getElementById("profTabBtn-posts").style.display="inline-flex";
+      document.getElementById("profTabBtn-affinity").style.display="inline-flex"; document.getElementById("profTabBtn-pm").style.display="none"; document.getElementById("profTabBtn-posts").style.display="inline-flex";
       document.getElementById("profTabBtn-sheet").classList.add("active");
       renderProfileModal();
-      await fetchPrivateMessagesForCurrentContext();
-      if (state.activeProfileTab === "pm") renderProfileModal();
     }
     function closeProfileModal() { document.getElementById("profileModal").classList.remove("open"); state.activeProfileId = null; }
     function switchProfileTab(tab, btn) {
