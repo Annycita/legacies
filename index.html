@@ -868,6 +868,10 @@ body.messages-mode footer { display:none !important; }
     .social-heart.liked{background:#fce7eb;border-color:#c75a70}
     .social-like-names{font-size:.82rem;color:#67566a;margin:.55rem 0 .75rem;line-height:1.5}
     .social-comments{border-top:1px solid #eee5d6;padding-top:.7rem;display:grid;gap:.55rem}
+    .social-comments-list{max-height:260px;overflow-y:auto;overscroll-behavior:contain;display:grid;gap:.55rem;padding:.1rem .45rem .1rem 0;scrollbar-width:thin;scrollbar-color:var(--gold) rgba(198,154,60,.12)}
+    .social-comments-list::-webkit-scrollbar{width:8px}
+    .social-comments-list::-webkit-scrollbar-track{background:rgba(198,154,60,.12);border-radius:10px}
+    .social-comments-list::-webkit-scrollbar-thumb{background:var(--gold);border-radius:10px}
     .social-comment{background:#f8f4ed;border-radius:9px;padding:.55rem .7rem;font-size:.88rem}
     .social-comment strong{color:#351B45}
     .social-comment time{font-size:.72rem;color:var(--ink-muted);margin-left:.35rem}
@@ -2908,7 +2912,7 @@ body.messages-mode footer { display:none !important; }
         const comments=commentsSnap.docs.map(d=>({id:d.id,...d.data()}));
         const commentsArea=card.querySelector(".social-comments"); if(!commentsArea)return;
         const list=comments.length?comments.map(c=>`<div class="social-comment"><strong>${escapeHtml(c.actorName||"Personaje")}</strong><time>${escapeHtml(c.timestamp||"")}</time><div>${escapeHtml(c.text||"")}</div></div>`).join(""):`<span style="font-size:.82rem;color:var(--ink-muted);">Todavía no hay comentarios.</span>`;
-        commentsArea.innerHTML=`<strong style="font-family:Cinzel,serif;font-size:.9rem;color:#351B45;">Comentarios (${comments.length})</strong>${list}${actor?`<form class="social-comment-form" onsubmit="submitSocialComment(event,'${escapeHtml(postKey)}')"><input class="form-control" name="comment" maxlength="500" placeholder="Escribe un comentario como ${escapeHtml(actor.name)}…" required/><button class="btn-primary-arcane" type="submit">Comentar</button></form>`:`<span style="font-size:.8rem;color:var(--ink-muted);">Inicia sesión y selecciona un personaje para comentar.</span>`}`;
+        commentsArea.innerHTML=`<strong style="font-family:Cinzel,serif;font-size:.9rem;color:#351B45;">Comentarios (${comments.length})</strong><div class="social-comments-list">${list}</div>${actor?`<form class="social-comment-form" onsubmit="submitSocialComment(event,'${escapeHtml(postKey)}')"><input class="form-control" name="comment" maxlength="500" placeholder="Escribe un comentario como ${escapeHtml(actor.name)}…" required/><button class="btn-primary-arcane" type="submit">Comentar</button></form>`:`<span style="font-size:.8rem;color:var(--ink-muted);">Inicia sesión y selecciona un personaje para comentar.</span>`}`;
       } catch(e) { console.warn("No se pudieron cargar las interacciones de",postKey,e); const names=card.querySelector(".social-like-names"); if(names)names.textContent="No se pudieron cargar las reacciones. Revisa las reglas de Firestore."; }
     }
     function renderSocialNpcCommentFields(select) {
