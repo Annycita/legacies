@@ -2883,7 +2883,7 @@ body.messages-mode footer { display:none !important; }
         if (token !== socialFeedLoadToken) return;
         const all = [...playerPosts, ...npcPosts].sort((a,b)=>b.createdAt-a.createdAt);
         if (!all.length) { feed.innerHTML=`<div class="card" style="text-align:center;">Todavía no hay publicaciones. ¡El muro de Rosewood está esperando su primera historia!</div>`; return; }
-        feed.innerHTML = all.map(p => { const photo=safePhotoSrc(p.authorPhoto); const image=safePhotoSrc(p.image); return `<article class="social-post-card" data-post-key="${escapeHtml(p.key)}"><div class="social-post-head"><div class="social-post-avatar">${photo?`<img src="${escapeHtml(photo)}" alt=""/>`:escapeHtml((p.authorName||"?").charAt(0).toUpperCase())}</div><div style="min-width:0;flex:1;"><div class="social-post-author">${escapeHtml(p.authorName)}</div><div class="social-post-time">${escapeHtml(p.timestamp||"Rosewood")}</div></div><span class="badge">${p.source==="npc"?"NPC":"Jugadora"}</span></div>${image?`<img class="social-post-image" src="${escapeHtml(image)}" alt="Publicación de ${escapeHtml(p.authorName)}" loading="lazy"/>`:""}<div class="social-post-body">${escapeHtml(p.text)}</div><div class="social-post-actions"><button class="social-heart" type="button" onclick="toggleSocialLike('${escapeHtml(p.key)}')">♡ Me gusta</button><span class="social-like-count" id="socialLikeCount-${escapeHtml(p.key)}"></span></div>${isAdminUid()?`<div class="social-npc-control" style="margin:.7rem 0;padding:.8rem;border:1px dashed rgba(198,154,60,.65);border-radius:10px;background:rgba(198,154,60,.07);"><strong style="display:block;margin-bottom:.45rem;color:#351B45;">Dirección · Activar NPC</strong><label style="display:block;font-size:.82rem;margin-bottom:.25rem;">Personaje(s)</label><select class="form-control social-npc-select" multiple size="3" style="margin-bottom:.5rem;">${(state.npcs||[]).map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join("")}</select><input class="form-control social-npc-comment" maxlength="500" placeholder="Comentario (déjalo vacío para solo dar corazón)" style="margin-bottom:.5rem;"/><button class="btn-primary-arcane" type="button" onclick="activateSocialNpcs('${escapeHtml(p.key)}',this)">Activar selección en esta publicación</button><small style="display:block;margin-top:.35rem;color:var(--ink-muted);">Solo actuarán al pulsar este botón. Un comentario escrito se publica con cada NPC seleccionado.</small></div>`:""}<div class="social-like-names" id="socialLikeNames-${escapeHtml(p.key)}"></div><div class="social-comments" id="socialComments-${escapeHtml(p.key)}"><span style="color:var(--ink-muted);font-size:.82rem;">Cargando comentarios…</span></div></article>`; }).join("");
+        feed.innerHTML = all.map(p => { const photo=safePhotoSrc(p.authorPhoto); const image=safePhotoSrc(p.image); return `<article class="social-post-card" data-post-key="${escapeHtml(p.key)}"><div class="social-post-head"><div class="social-post-avatar">${photo?`<img src="${escapeHtml(photo)}" alt=""/>`:escapeHtml((p.authorName||"?").charAt(0).toUpperCase())}</div><div style="min-width:0;flex:1;"><div class="social-post-author">${escapeHtml(p.authorName)}</div><div class="social-post-time">${escapeHtml(p.timestamp||"Rosewood")}</div></div><span class="badge">${p.source==="npc"?"NPC":"Jugadora"}</span></div>${image?`<img class="social-post-image" src="${escapeHtml(image)}" alt="Publicación de ${escapeHtml(p.authorName)}" loading="lazy"/>`:""}<div class="social-post-body">${escapeHtml(p.text)}</div><div class="social-post-actions"><button class="social-heart" type="button" onclick="toggleSocialLike('${escapeHtml(p.key)}')">♡ Me gusta</button><span class="social-like-count" id="socialLikeCount-${escapeHtml(p.key)}"></span></div>${isAdminUid()?`<div class="social-npc-control" style="margin:.7rem 0;padding:.8rem;border:1px dashed rgba(198,154,60,.65);border-radius:10px;background:rgba(198,154,60,.07);"><strong style="display:block;margin-bottom:.45rem;color:#351B45;">Dirección · Activar NPC</strong><label style="display:block;font-size:.82rem;margin-bottom:.25rem;">Personaje(s)</label><select class="form-control social-npc-select" multiple size="4" style="margin-bottom:.5rem;" onchange="renderSocialNpcCommentFields(this)">${(state.npcs||[]).map(n=>`<option value="${escapeHtml(n.id)}">${escapeHtml(n.name)}</option>`).join("")}</select><div class="social-npc-comment-fields" style="display:grid;gap:.45rem;margin-bottom:.6rem;"><small style="color:var(--ink-muted);">Selecciona uno o varios NPCs para escribir un comentario propio para cada uno. Si dejas su campo vacío, solo dará corazón.</small></div><button class="btn-primary-arcane" type="button" onclick="activateSocialNpcs('${escapeHtml(p.key)}',this)">Activar selección en esta publicación</button><small style="display:block;margin-top:.35rem;color:var(--ink-muted);">Los NPCs solo actuarán al pulsar este botón.</small></div>`:""}<div class="social-like-names" id="socialLikeNames-${escapeHtml(p.key)}"></div><div class="social-comments" id="socialComments-${escapeHtml(p.key)}"><span style="color:var(--ink-muted);font-size:.82rem;">Cargando comentarios…</span></div></article>`; }).join("");
         await Promise.all(all.map(p => refreshSocialPost(p.key)));
       } catch(e) { console.error("Publicaciones:",e); if(token===socialFeedLoadToken) feed.innerHTML=`<div class="card" style="text-align:center;">No se pudieron cargar las publicaciones. Comprueba los permisos de lectura de los perfiles públicos en Firestore.</div>`; }
     }
@@ -2904,27 +2904,55 @@ body.messages-mode footer { display:none !important; }
         commentsArea.innerHTML=`<strong style="font-family:Cinzel,serif;font-size:.9rem;color:#351B45;">Comentarios (${comments.length})</strong>${list}${actor?`<form class="social-comment-form" onsubmit="submitSocialComment(event,'${escapeHtml(postKey)}')"><input class="form-control" name="comment" maxlength="500" placeholder="Escribe un comentario como ${escapeHtml(actor.name)}…" required/><button class="btn-primary-arcane" type="submit">Comentar</button></form>`:`<span style="font-size:.8rem;color:var(--ink-muted);">Inicia sesión y selecciona un personaje para comentar.</span>`}`;
       } catch(e) { console.warn("No se pudieron cargar las interacciones de",postKey,e); const names=card.querySelector(".social-like-names"); if(names)names.textContent="No se pudieron cargar las reacciones. Revisa las reglas de Firestore."; }
     }
+    function renderSocialNpcCommentFields(select) {
+      const panel = select.closest(".social-npc-control");
+      const holder = panel && panel.querySelector(".social-npc-comment-fields");
+      if (!holder) return;
+      const selected = [...select.selectedOptions].map(o => String(o.value));
+      const previous = new Map([...holder.querySelectorAll("[data-social-npc-comment]")].map(el => [el.dataset.socialNpcComment, el.value]));
+      if (!selected.length) {
+        holder.innerHTML = '<small style="color:var(--ink-muted);">Selecciona uno o varios NPCs para escribir un comentario propio para cada uno. Si dejas su campo vacío, solo dará corazón.</small>';
+        return;
+      }
+      holder.innerHTML = selected.map(id => {
+        const npc = (state.npcs || []).find(n => String(n.id) === id);
+        const name = npc?.name || "NPC";
+        return `<label style="display:grid;gap:.2rem;font-size:.82rem;color:#351B45;"><strong>${escapeHtml(name)}</strong><textarea class="form-control" data-social-npc-comment="${escapeHtml(id)}" maxlength="500" rows="2" placeholder="Escribe un comentario como ${escapeHtml(name)}…">${escapeHtml(previous.get(id) || "")}</textarea></label>`;
+      }).join("");
+    }
+
     async function activateSocialNpcs(postKey, button) {
       if (!isAdminUid()) { showToast("Solo Dirección puede activar NPCs."); return; }
       const panel = button.closest(".social-npc-control");
       const selected = [...panel.querySelector(".social-npc-select").selectedOptions].map(o => String(o.value));
-      const comment = panel.querySelector(".social-npc-comment").value.trim();
       if (!selected.length) { showToast("Selecciona al menos un NPC."); return; }
       button.disabled = true;
+      let heartsDone = 0, commentsDone = 0;
       try {
         for (const npcId of selected) {
           const npc = (state.npcs || []).find(n => String(n.id) === npcId);
           if (!npc) continue;
           const actor = { id:`npc_${npc.id}`, name:npc.name || "NPC", photo:npc.photo || "", kind:"npc" };
           await socialPostRef(postKey).collection("likes").doc(actor.id).set({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", createdAt:firebase.firestore.FieldValue.serverTimestamp() }, { merge:true });
-          if (comment) await socialPostRef(postKey).collection("comments").add({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", text:comment, timestamp:new Date().toLocaleString("es-PE"), createdAt:firebase.firestore.FieldValue.serverTimestamp() });
+          heartsDone++;
+          const commentField = panel.querySelector(`[data-social-npc-comment="${CSS.escape(npcId)}"]`);
+          const comment = commentField ? commentField.value.trim() : "";
+          if (comment) {
+            await socialPostRef(postKey).collection("comments").add({ actorId:actor.id, actorName:actor.name, actorPhoto:actor.photo, actorType:"npc", text:comment, timestamp:new Date().toLocaleString("es-PE"), createdAt:firebase.firestore.FieldValue.serverTimestamp() });
+            commentsDone++;
+          }
         }
-        panel.querySelector(".social-npc-comment").value = "";
-        panel.querySelector(".social-npc-select").selectedIndex = -1;
         await refreshSocialPost(postKey);
-        showToast(comment ? "NPCs activados: reacciones y comentarios publicados." : "NPCs activados: corazones publicados.");
-      } catch (e) { console.error(e); showToast("No se pudo activar la selección. Revisa los permisos de Firestore."); }
-      finally { button.disabled = false; }
+        if (commentsDone) showToast(`${heartsDone} corazón(es) y ${commentsDone} comentario(s) publicados.`);
+        else showToast(`${heartsDone} corazón(es) publicados. No había comentarios escritos.`);
+        panel.querySelectorAll("[data-social-npc-comment]").forEach(el => el.value = "");
+        panel.querySelector(".social-npc-select").selectedIndex = -1;
+        renderSocialNpcCommentFields(panel.querySelector(".social-npc-select"));
+      } catch (e) {
+        console.error("Error al activar NPCs en publicaciones:", e);
+        showToast(`Se publicaron ${heartsDone} corazón(es) y ${commentsDone} comentario(s). Falló el resto: ${e.code || e.message || "error de Firestore"}`);
+        await refreshSocialPost(postKey);
+      } finally { button.disabled = false; }
     }
 
     async function toggleSocialLike(postKey) {
