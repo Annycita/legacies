@@ -1434,7 +1434,6 @@ body.messages-mode footer { display:none !important; }
           if (Array.isArray(data.npcs) && data.npcs.length) state.npcs = data.npcs;
           if (Array.isArray(data.publicacionesNpc)) state.npcPosts = data.publicacionesNpc;
           if (Array.isArray(data.cronicas) && data.cronicas.length) state.chronicles = data.cronicas;
-          if (Array.isArray(data.chat) && data.chat.length) state.chat = data.chat;
           const preservedView = state.currentView;
           const preservedScrollY = window.scrollY;
           renderAll();
@@ -2296,10 +2295,16 @@ body.messages-mode footer { display:none !important; }
       await refreshChat(notify);
     }
     async function refreshChat(notify = false) {
-      const url = getScriptUrl(); if (!url) { renderChat(); return; }
+      const url = getScriptUrl();
+      const user = legaciesAuth.currentUser;
+      if (!user || !state.user) { state.chat = []; localStorage.removeItem("legacies_chat"); renderChat(); return; }
+      if (!url) { renderChat(); return; }
       try {
-        const res = await fetch(`${url}?action=getChat&t=${Date.now()}`); const data = await res.json();
+        const token = await user.getIdToken(true);
+        const res = await fetch(`${url}?action=getChat&idToken=${encodeURIComponent(token)}&t=${Date.now()}`);
+        const data = await res.json();
         if (data && data.ok && Array.isArray(data.chat)) { state.chat = data.chat; renderChat(); if (notify) showToast("Chat actualizado."); }
+        else { state.chat = []; renderChat(); if (notify && data && data.error) showToast(data.error); }
       } catch (e) { if (notify) showToast("Error al actualizar el chat."); }
     }
     function renderChat() {
@@ -2615,7 +2620,7 @@ body.messages-mode footer { display:none !important; }
       }catch(error){const messages={"auth/email-already-in-use":"Ese correo ya tiene una cuenta.","auth/invalid-email":"El correo no parece válido.","auth/weak-password":"La contraseña debe tener al menos 6 caracteres.","auth/user-not-found":"No encontramos una cuenta con ese correo.","auth/wrong-password":"La contraseña es incorrecta.","auth/invalid-credential":"Correo o contraseña incorrectos.","auth/too-many-requests":"Demasiados intentos. Espera un momento e inténtalo otra vez."};showToast(messages[error.code]||"No se pudo completar el acceso: "+error.message);}
     }
     async function applyFirebaseUser(user) {
-      if(!user){stopOnlinePresence();state.user=null;activeMessagesOwnerUid="";activeMessagesCharacterId="";updateAuthUI();await loadPublicCharacterProfiles();renderNpcs();renderMessagesDirectory();renderMessagesConversation();return;}
+      if(!user){stopOnlinePresence();state.user=null;state.chat=[];localStorage.removeItem("legacies_chat");activeMessagesOwnerUid="";activeMessagesCharacterId="";updateAuthUI();await loadPublicCharacterProfiles();renderNpcs();renderMessagesDirectory();renderMessagesConversation();renderChat();return;}
       const isAdmin=user.uid===LEGACIES_ADMIN_UID;
       if(!isAdmin){
         try{const token=await user.getIdToken(true),res=await apiPost({action:"registerAccount",idToken:token,displayName:user.displayName||user.email||"Estudiante"});
