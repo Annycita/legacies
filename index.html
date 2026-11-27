@@ -85,8 +85,17 @@ window.navigateTo = function(view, ...args) { if (view === 'mensajes') view = 'i
     .filter-chip { background: var(--bg-warm); border: 1px solid rgba(198,154,60,0.55); color: var(--ink-dark); font-family: 'Montserrat', sans-serif; font-size: 0.78rem; font-weight: 600; padding: 0.42rem 0.9rem; border-radius: 999px; cursor: pointer; }
     .filter-chip.active, .filter-chip:hover { background: var(--bg-secondary); color: var(--text-light); border-color: var(--gold); }
 
-    .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 1.5rem; }
-    .post-image { width: 100%; height: 185px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(198,154,60,0.45); margin-bottom: 1rem; }
+    .board-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); gap: 1.5rem; align-items: stretch; }
+    .board-card { display:flex; flex-direction:column; min-width:0; height:390px; overflow:hidden; }
+    .board-card .post-image { width: 100%; height: 135px; flex:0 0 135px; object-fit: cover; border-radius: 6px; border: 1px solid rgba(198,154,60,0.45); margin-bottom: .75rem; }
+    .board-card .board-copy { min-height:0; flex:1 1 auto; overflow-y:auto; padding:0 .55rem .15rem 0; overscroll-behavior:contain; scrollbar-width:thin; scrollbar-color:var(--gold) rgba(198,154,60,0.12); }
+    .board-card .board-copy::-webkit-scrollbar { width:8px; }
+    .board-card .board-copy::-webkit-scrollbar-track { background:rgba(198,154,60,0.12); border-radius:10px; }
+    .board-card .board-copy::-webkit-scrollbar-thumb { background:var(--gold); border-radius:10px; }
+    .board-card .board-copy p { margin:0; line-height:1.55; }
+    .board-card .post-title { flex:0 0 auto; }
+    .board-card .post-author, .board-card .board-reactions { flex:0 0 auto; }
+    @media (max-width:700px) { .board-card { height:360px; } }
     .post-meta { display: flex; align-items: center; justify-content: space-between; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.65rem; }
     .badge { font-family: 'Montserrat', sans-serif; font-size: 0.72rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; padding: 0.25rem 0.6rem; border-radius: 4px; background: rgba(53,27,69,0.1); color: var(--bg-secondary); border: 1px solid rgba(53,27,69,0.25); }
     .badge-important { background: var(--bg-secondary); color: var(--gold); border-color: var(--gold); }
@@ -1477,7 +1486,7 @@ body:not(.messages-mode) { overflow-y: visible !important; }
       if (!list.length) { grid.innerHTML = `<div class="card" style="grid-column:1/-1; text-align:center;">No hay comunicados en esta categoría.</div>`; return; }
       grid.innerHTML = list.map(p => {
         const img = safePhotoSrc(p.image);
-        return `<article class="card ${p.important?'card-important':''}">${img?`<img class="post-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.title)}" loading="lazy" />`:''}<div class="post-meta"><div><span class="badge">${escapeHtml(p.category)}</span>${p.important?' <span class="badge badge-important">★ Importante</span>':''}</div><span class="meta-date">${escapeHtml(p.date)}</span></div><h3 class="post-title">${escapeHtml(p.title)}</h3><p>${escapeHtml(p.description)}</p><div class="post-author">Responsable: ${escapeHtml(p.author)}</div><div class="board-reactions" id="boardReactions-${escapeHtml(p.id)}"><span class="board-reaction-hint">Cargando reacciones...</span></div></article>`;
+        return `<article class="card board-card ${p.important?'card-important':''}">${img?`<img class="post-image" src="${escapeHtml(img)}" alt="${escapeHtml(p.title)}" loading="lazy" />`:''}<div class="post-meta"><div><span class="badge">${escapeHtml(p.category)}</span>${p.important?' <span class="badge badge-important">★ Importante</span>':''}</div><span class="meta-date">${escapeHtml(p.date)}</span></div><h3 class="post-title">${escapeHtml(p.title)}</h3><div class="board-copy"><p>${escapeHtml(p.description)}</p></div><div class="post-author">Responsable: ${escapeHtml(p.author)}</div><div class="board-reactions" id="boardReactions-${escapeHtml(p.id)}"><span class="board-reaction-hint">Cargando reacciones...</span></div></article>`;
       }).join("");
       list.forEach(p => loadBoardReactions(p.id));
     }
